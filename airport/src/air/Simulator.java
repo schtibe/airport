@@ -1,24 +1,7 @@
 package air;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.Position;
-import javax.swing.text.Segment;
-import javax.swing.text.Style;
-import javax.swing.text.StyledDocument;
 
 
 /**
