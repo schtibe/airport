@@ -31,8 +31,16 @@ public class SimWorld {
 		return aircrafts.get(name);
 	}
 	
-	static SimWorld getInstance(){
+	public static SimWorld getInstance(){
 		return instance;
+	}
+	
+	public HashMap<String, Airport> getAirports() {
+		return this.airports;
+	}
+	
+	public HashMap<String, Aircraft> getAircrafts() {
+		return this.aircrafts;
 	}
 
 	@Override

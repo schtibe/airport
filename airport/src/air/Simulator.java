@@ -3,6 +3,8 @@ package air;
 import java.util.Random;
 import java.util.Vector;
 
+import worldgui.WorldGui;
+
 
 /**
  * @author ps
@@ -134,11 +136,15 @@ public class Simulator implements EventScheduler{
 	}
 	
 	static public void main(String [] argv){
+		Config.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
 		sim.initWorld();
 		sim.gui = new Gui();
 		sim.gui.init();
+		WorldGui wg = new WorldGui();
+		wg.start();
 		sim.runSimulation(); // main simulation loop
+		
 	}
 	
 }
