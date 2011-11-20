@@ -17,6 +17,9 @@ public class Simulator implements EventScheduler{
 	private Gui gui;
 	
 	private  Vector<Event> evList; // time ordered list
+	private long startTime;
+	
+	private long scale = 1000;
 	
 	public Simulator (SimWorld world){
 		this.world = world;
@@ -51,7 +54,17 @@ public class Simulator implements EventScheduler{
 		Event e = evList.remove(0);
 		now = e.getTimeStamp();
 		
-
+		long rt = System.currentTimeMillis();
+		long elapsedTime = (rt - this.startTime);
+		long target = now * this.scale;
+		
+		if (elapsedTime < target) {
+			try {
+				Thread.sleep(target - elapsedTime);
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+			}
+		}
 		System.out.println(e.toString());
 		//gui.println(e.toString()); // log the event
 		e.getEventHandler().processEvent(e,this);
@@ -64,7 +77,8 @@ public class Simulator implements EventScheduler{
 	 *  This is the main simulation loop
 	 */
 	public void runSimulation(){
-		int evCnt =0;
+		this.startTime = System.currentTimeMillis();
+		int evCnt = 0;
 		while (evList.size() > 0){
 			processNextEvent();
 			evCnt++;
