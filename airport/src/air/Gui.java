@@ -14,6 +14,10 @@ import javax.swing.JTextArea;
  * A frame with a JTextArea in a JScrollPane which serves as a log - window
  */
 public class Gui extends JFrame {
+	/**
+	 * Dunno what it's for
+	 */
+	private static final long serialVersionUID = -3216049666676832356L;
 	private JTextArea jt;
 
 	public void init(){
@@ -32,7 +36,7 @@ public class Gui extends JFrame {
 		// now make it visible
 		setLocation(100,100);
 		setSize(600,600);
-		setVisible(true);
+		//setVisible(true);
 	}
 
 	/**
