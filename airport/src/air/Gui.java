@@ -32,7 +32,7 @@ public class Gui extends JFrame {
 		// now make it visible
 		setLocation(100,100);
 		setSize(600,600);
-		setVisible(true);
+		//setVisible(true);
 	}
 
 	/**

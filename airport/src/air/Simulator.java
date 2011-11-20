@@ -50,7 +50,10 @@ public class Simulator implements EventScheduler{
 	public void processNextEvent(){
 		Event e = evList.remove(0);
 		now = e.getTimeStamp();
-		gui.println(e.toString()); // log the event
+		
+
+		System.out.println(e.toString());
+		//gui.println(e.toString()); // log the event
 		e.getEventHandler().processEvent(e,this);
 		//log the state of the object which is the target of this 
 		gui.println(e.getEventHandler().toString());   
