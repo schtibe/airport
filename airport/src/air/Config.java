@@ -38,4 +38,20 @@ public class Config {
 	public double getWorldScale() {
 		return 250;
 	}
+	
+	public double getXOffset() {
+		return 2000;
+	}
+	
+	public double getYOffset() {
+		return 450;
+	}
+	
+	public double getWorldHeight() {
+		return 600;
+	}
+	
+	public double getWorldWidth() {
+		return 800;
+	}
 }

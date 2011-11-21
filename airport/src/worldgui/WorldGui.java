@@ -17,7 +17,12 @@ public class WorldGui extends Thread {
 
         QApplication.initialize(Config.getInstance().getArgs());
    	 
-        QGraphicsScene scene = new QGraphicsScene();
+        QGraphicsScene scene = new QGraphicsScene(
+        		10, 
+        		10, 
+        		Config.getInstance().getWorldWidth(), 
+        		Config.getInstance().getWorldHeight()
+        );
         Config.getInstance().setScene(scene);
         //QGraphicsRectItem rect = scene.addRect(0,0,100,100);
         QGraphicsView view = new QGraphicsView(scene);
@@ -33,5 +38,14 @@ public class WorldGui extends Thread {
 			Airport airport = new Airport(a.getValue());
 			airport.drawObject(Config.getInstance().getScene());
 		}
+	}
+	
+	public static double getXPos(double xVal) {
+		return xVal  / Config.getInstance().getWorldScale() - Config.getInstance().getXOffset();
+	}
+	
+	public static double getYPos(double yVal) {
+		return Config.getInstance().getWorldHeight() - 
+				(yVal  / Config.getInstance().getWorldScale() - Config.getInstance().getYOffset());
 	}
 }

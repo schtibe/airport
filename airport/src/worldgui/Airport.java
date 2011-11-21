@@ -16,16 +16,17 @@ public class Airport implements WorldObjects {
 
 	@Override
 	public void drawObject(QGraphicsScene scene) {
+		Config confInst = Config.getInstance();
 		scene.addRect(
-				this.airport.getX1() / Config.getInstance().getWorldScale(),
-				this.airport.getY1() / Config.getInstance().getWorldScale(), 
-				this.airport.getRunwayLength() / Config.getInstance().getWorldScale(), 
+				WorldGui.getXPos(this.airport.getX1()),
+				WorldGui.getYPos(this.airport.getY1()), 
+				this.airport.getRunwayLength() / confInst.getWorldScale(), 
 				20
 		);
 		
 		QGraphicsSimpleTextItem text = scene.addSimpleText(this.airport.getName());
-		text.setX(this.airport.getX1() / Config.getInstance().getWorldScale());
-		text.setY(this.airport.getY1() / Config.getInstance().getWorldScale());
+		text.setX(WorldGui.getXPos(this.airport.getX1()));
+		text.setY(WorldGui.getYPos(this.airport.getY1()));
 	}
 
 }
