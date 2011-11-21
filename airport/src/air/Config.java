@@ -34,4 +34,8 @@ public class Config {
 	public QGraphicsScene getScene() {
 		return this.scene;
 	}
+
+	public double getWorldScale() {
+		return 250;
+	}
 }
