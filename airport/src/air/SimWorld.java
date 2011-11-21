@@ -13,6 +13,9 @@ public class SimWorld {
 	private HashMap<String,Airport> airports = new HashMap<String,Airport>();
 	private HashMap<String,Aircraft> aircrafts = new HashMap<String,Aircraft>();
 	static private SimWorld instance = new SimWorld(); 
+	
+	private Simulator simulator;
+	
 	private SimWorld(){}
 	
 	public void addAirport(Airport ap){
@@ -41,6 +44,14 @@ public class SimWorld {
 	
 	public HashMap<String, Aircraft> getAircrafts() {
 		return this.aircrafts;
+	}
+	
+	public void setSimulator(Simulator s) {
+		this.simulator = s;
+	}
+	
+	public Simulator getSimulator() {
+		return this.simulator;
 	}
 
 	@Override

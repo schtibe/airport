@@ -21,10 +21,11 @@ public class Simulator implements EventScheduler{
 	private  Vector<Event> evList; // time ordered list
 	private long startTime;
 	
-	private long scale = 1000;
+	private long scale = 500;
 	
 	public Simulator (SimWorld world){
 		this.world = world;
+		world.setSimulator(this);
 		evList = new Vector<Event>();
 	}
 
