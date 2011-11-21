@@ -4,18 +4,15 @@ import air.Config;
 
 import com.trolltech.qt.gui.QGraphicsScene;
 import com.trolltech.qt.gui.QGraphicsSimpleTextItem;
-import com.trolltech.qt.gui.QGraphicsTextItem;
 
-public class Airport implements WorldObjects {
+public class Airport {
 	air.Airport airport;
 	
 	public Airport(air.Airport airport) {
 		this.airport = airport;
 	}
-	
 
-	@Override
-	public void drawObject(QGraphicsScene scene) {
+	public void draw(QGraphicsScene scene) {
 		Config confInst = Config.getInstance();
 		scene.addRect(
 				WorldGui.getXPos(this.airport.getX1()),

@@ -1,6 +1,5 @@
 package air;
 
-import com.trolltech.qt.gui.QGraphicsRectItem;
 import com.trolltech.qt.gui.QGraphicsScene;
 
 public class Config {
@@ -27,11 +26,11 @@ public class Config {
 	}
 	
 	QGraphicsScene scene;
-	public void setScene(QGraphicsScene scene) {
+	public synchronized void setScene(QGraphicsScene scene) {
 		this.scene = scene;
 	}
 	
-	public QGraphicsScene getScene() {
+	public synchronized QGraphicsScene getScene() {
 		return this.scene;
 	}
 

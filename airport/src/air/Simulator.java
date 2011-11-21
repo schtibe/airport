@@ -142,7 +142,7 @@ public class Simulator implements EventScheduler{
 		sim.gui = new Gui();
 		sim.gui.init();
 		WorldGui wg = new WorldGui();
-		wg.start();
+		new Thread(wg).start();
 		sim.runSimulation(); // main simulation loop
 		
 	}
