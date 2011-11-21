@@ -21,7 +21,7 @@ public class Simulator implements EventScheduler{
 	private  Vector<Event> evList; // time ordered list
 	private long startTime;
 	
-	private long scale = 500;
+	private long scale = 10;
 	
 	public Simulator (SimWorld world){
 		this.world = world;
@@ -68,8 +68,7 @@ public class Simulator implements EventScheduler{
 				ex.printStackTrace();
 			}
 		}
-		System.out.println(e.toString());
-		//gui.println(e.toString()); // log the event
+		gui.println(e.toString()); // log the event
 		e.getEventHandler().processEvent(e,this);
 		//log the state of the object which is the target of this 
 		gui.println(e.getEventHandler().toString());   

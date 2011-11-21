@@ -44,6 +44,7 @@ public class Gui extends JFrame {
 	 * @param string
 	 */
 	public void println(String string){
-		jt.append(string+"\n");
+		System.out.println(string);
+		//jt.append(string+"\n");
 	}
 }

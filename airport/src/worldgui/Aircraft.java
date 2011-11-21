@@ -3,7 +3,9 @@ package worldgui;
 import utils.Vector;
 import air.SimWorld;
 
+import com.trolltech.qt.core.QRectF;
 import com.trolltech.qt.gui.QGraphicsEllipseItem;
+import com.trolltech.qt.gui.QGraphicsScene;
 import com.trolltech.qt.gui.QPainter;
 import com.trolltech.qt.gui.QStyleOptionGraphicsItem;
 import com.trolltech.qt.gui.QWidget;
@@ -27,10 +29,17 @@ public class Aircraft extends QGraphicsEllipseItem {
 		this.setRect(xPos, yPos, 10, 10);
 		p.drawEllipse((int)xPos, (int)yPos, 10, 10);
 	}
+	
+	public void draw(QGraphicsScene scene) {
+		Vector pos = this.getPosition();
+		double xPos = WorldGui.getXPos(pos.getX());
+		double yPos = WorldGui.getYPos(pos.getY());
+		scene.addEllipse((int)xPos, (int)yPos, 10, 10);
+	}
 
 	protected Vector getPosition() {
 		int state = this.aircraft.getState();
-		System.err.println("trying to get position of state" + state);
+		
 		switch (state) {
 			case air.Aircraft.ON_FLIGHT:
 				Vector position =  this.getFlightPosition();
@@ -64,7 +73,7 @@ public class Aircraft extends QGraphicsEllipseItem {
 		Vector n       = new Vector(new double[] {targetX - lastX, targetY - lastY});
 		n = n.normalize();
 	
-		Vector tail = n.multiply((t - t0) * (speed / 1000));
+		Vector tail = n.multiply((t - t0) * (speed));
 		return new Vector(new double[] {
 				lastX + tail.getComponent(0),
 				lastY + tail.getComponent(1)

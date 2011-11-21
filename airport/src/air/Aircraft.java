@@ -62,10 +62,14 @@ public class Aircraft implements EventHandler{
 		this.lastTime = lastTime;
 	}
 	public int getState() {
-		return state;
+		synchronized (this) {
+			return state;
+		}
 	}
 	public void setState(int state) {
-		this.state = state;
+		synchronized (this) {
+			this.state = state;
+		}
 	}
 	public Airport getOrigin() {
 		return origin;
