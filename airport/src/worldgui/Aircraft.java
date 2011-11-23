@@ -3,14 +3,13 @@ package worldgui;
 import utils.Vector;
 import air.SimWorld;
 
-import com.trolltech.qt.core.QRectF;
 import com.trolltech.qt.gui.QGraphicsEllipseItem;
 import com.trolltech.qt.gui.QGraphicsScene;
 import com.trolltech.qt.gui.QPainter;
 import com.trolltech.qt.gui.QStyleOptionGraphicsItem;
 import com.trolltech.qt.gui.QWidget;
 
-public class Aircraft extends QGraphicsEllipseItem {
+public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 
 	private air.Aircraft aircraft;
 	

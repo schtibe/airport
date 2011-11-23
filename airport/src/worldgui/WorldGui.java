@@ -16,7 +16,7 @@ public class WorldGui extends Thread {
 	QGraphicsScene scene;
 	QGraphicsView view;
 	
-	private List<Aircraft> aircrafts = new ArrayList<Aircraft>();
+	private List<WorldObject> objects = new ArrayList<WorldObject>();
 	
 	
 	public void run() {
@@ -55,8 +55,8 @@ public class WorldGui extends Thread {
 	 */
 	public void updateWorld() {
 		this.scene.clear();
-		for (Aircraft a: this.aircrafts) {
-			a.draw(this.scene);
+		for (WorldObject o: this.objects) {
+			o.draw(this.scene);
 		}
 	}
 	
@@ -67,12 +67,13 @@ public class WorldGui extends Thread {
 		for (Entry<String, air.Airport> a : SimWorld.getInstance().getAirports().entrySet()) {
 			Airport airport = new Airport(a.getValue());
 			airport.draw(Config.getInstance().getScene());
+			this.objects.add(airport);
 		}
 		
 		for (Entry<String, air.Aircraft> a: SimWorld.getInstance().getAircrafts().entrySet()) {
 			Aircraft aircraft = new Aircraft(a.getValue());
 			this.scene.addItem(aircraft);
-			this.aircrafts.add(aircraft);
+			this.objects.add(aircraft);
 		}
 	}
 	

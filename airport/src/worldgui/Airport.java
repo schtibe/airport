@@ -5,7 +5,7 @@ import air.Config;
 import com.trolltech.qt.gui.QGraphicsScene;
 import com.trolltech.qt.gui.QGraphicsSimpleTextItem;
 
-public class Airport {
+public class Airport implements WorldObject {
 	air.Airport airport;
 	
 	public Airport(air.Airport airport) {
