@@ -2,6 +2,8 @@ package air;
 
 import java.util.HashMap;
 
+import com.trolltech.qt.gui.QGraphicsScene;
+
 
 /**
  * SimWorld is a container class with airports and aircrafts whith unique name 
@@ -70,4 +72,41 @@ public class SimWorld {
 		this.timeScale = timeScale;
 	}
 	
+	String[] args;
+	public void setArgs(String[] args) {
+		this.args = args;
+	}
+	
+	public String[] getArgs() {
+		return this.args;
+	}
+	
+	QGraphicsScene scene;
+	public synchronized void setScene(QGraphicsScene scene) {
+		this.scene = scene;
+	}
+	
+	public synchronized QGraphicsScene getScene() {
+		return this.scene;
+	}
+
+	public double getWorldScale() {
+		return 250;
+	}
+	
+	public double getXOffset() {
+		return 2000;
+	}
+	
+	public double getYOffset() {
+		return 450;
+	}
+	
+	public double getWorldHeight() {
+		return 600;
+	}
+	
+	public double getWorldWidth() {
+		return 800;
+	}
 }

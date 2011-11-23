@@ -1,6 +1,6 @@
 package worldgui;
 
-import air.Config;
+import air.SimWorld;
 
 import com.trolltech.qt.gui.QGraphicsScene;
 import com.trolltech.qt.gui.QGraphicsSimpleTextItem;
@@ -13,7 +13,7 @@ public class Airport implements WorldObject {
 	}
 
 	public void draw(QGraphicsScene scene) {
-		Config confInst = Config.getInstance();
+		SimWorld confInst = SimWorld.getInstance();
 		/*
 		scene.addRect(
 				WorldGui.getXPos(this.airport.getX1()),

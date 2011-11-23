@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import air.Config;
 import air.SimWorld;
 
 import com.trolltech.qt.core.QTimer;
@@ -20,15 +19,15 @@ public class WorldGui extends Thread {
 	
 	
 	public void run() {
-        QApplication.initialize(Config.getInstance().getArgs());
+        QApplication.initialize(SimWorld.getInstance().getArgs());
    	 
         this.scene = new QGraphicsScene(
         		10, 
         		10, 
-        		Config.getInstance().getWorldWidth(), 
-        		Config.getInstance().getWorldHeight()
+        		SimWorld.getInstance().getWorldWidth(), 
+        		SimWorld.getInstance().getWorldHeight()
         );
-        Config.getInstance().setScene(this.scene);
+        SimWorld.getInstance().setScene(this.scene);
         //QGraphicsRectItem rect = scene.addRect(0,0,100,100);
         this.view = new QGraphicsView(this.scene);
         view.show();
@@ -66,7 +65,7 @@ public class WorldGui extends Thread {
 	private void initObjects() {
 		for (Entry<String, air.Airport> a : SimWorld.getInstance().getAirports().entrySet()) {
 			Airport airport = new Airport(a.getValue());
-			airport.draw(Config.getInstance().getScene());
+			airport.draw(SimWorld.getInstance().getScene());
 			this.objects.add(airport);
 		}
 		
@@ -84,7 +83,7 @@ public class WorldGui extends Thread {
 	 * @return
 	 */
 	public static double getXPos(double xVal) {
-		return xVal  / Config.getInstance().getWorldScale() - Config.getInstance().getXOffset();
+		return xVal  / SimWorld.getInstance().getWorldScale() - SimWorld.getInstance().getXOffset();
 	}
 	
 	/**
@@ -93,7 +92,7 @@ public class WorldGui extends Thread {
 	 * @return
 	 */
 	public static double getYPos(double yVal) {
-		return Config.getInstance().getWorldHeight() - 
-				(yVal  / Config.getInstance().getWorldScale() - Config.getInstance().getYOffset());
+		return SimWorld.getInstance().getWorldHeight() - 
+				(yVal  / SimWorld.getInstance().getWorldScale() - SimWorld.getInstance().getYOffset());
 	}
 }

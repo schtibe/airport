@@ -143,7 +143,7 @@ public class Simulator implements EventScheduler{
 	}
 	
 	static public void main(String [] argv){
-		Config.getInstance().setArgs(argv);
+		SimWorld.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
 		sim.initWorld();
 		sim.gui = new Gui();
