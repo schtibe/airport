@@ -14,12 +14,14 @@ public class Airport implements WorldObject {
 
 	public void draw(QGraphicsScene scene) {
 		Config confInst = Config.getInstance();
+		/*
 		scene.addRect(
 				WorldGui.getXPos(this.airport.getX1()),
 				WorldGui.getYPos(this.airport.getY1()), 
 				this.airport.getRunwayLength() / confInst.getWorldScale(), 
 				20
 		);
+		*/
 		
 		QGraphicsSimpleTextItem text = scene.addSimpleText(this.airport.getName());
 		text.setX(WorldGui.getXPos(this.airport.getX1()));
