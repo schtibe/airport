@@ -60,4 +60,14 @@ public class SimWorld {
 				+ "]";
 	}
 	
+	long timeScale = 100;
+
+	public long getTimeScale() {
+		return timeScale;
+	}
+
+	public void setTimeScale(long timeScale) {
+		this.timeScale = timeScale;
+	}
+	
 }

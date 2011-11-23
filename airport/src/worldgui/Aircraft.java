@@ -43,7 +43,6 @@ public class Aircraft extends QGraphicsEllipseItem {
 		switch (state) {
 			case air.Aircraft.ON_FLIGHT:
 				Vector position =  this.getFlightPosition();
-				System.err.println(position);
 				return position;
 			case air.Aircraft.ON_GROUND:
 			case air.Aircraft.WAITING_FOR_TAKE_OFF:
@@ -64,9 +63,12 @@ public class Aircraft extends QGraphicsEllipseItem {
 	protected Vector getFlightPosition() {
 		double lastX   = this.aircraft.getLastX();
 		double lastY   = this.aircraft.getLastY();
-		long t         = SimWorld.getInstance().getSimulator().getCurrentSimulationTime();
+		
 		long t0        = this.aircraft.getLastTime();
-		long speed     = this.aircraft.getMaxSpeed();
+		long t         = System.currentTimeMillis() - 
+							SimWorld.getInstance().getSimulator().getRtStartTime() - t0 * 
+							SimWorld.getInstance().getTimeScale();
+		long speed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
 		double targetX = this.aircraft.getDestination().getX1();
 		double targetY = this.aircraft.getDestination().getY1();
 		
