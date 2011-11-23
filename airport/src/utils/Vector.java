@@ -47,16 +47,34 @@ public class Vector {
 			this.components = new double[] { 0, 0 };
 		}
 	}
-
+	
+	/**
+	 * adding two vectors
+	 * 
+	 * @param the vector to be added to this vector
+	 * @return a vector as a result of the operation
+	 */
 	public Vector add(Vector vector) {
 		return new Vector(new double[] { components[0] + vector.getComponent(0),
 				components[1] + vector.getComponent(1) });
 	}
 
+	/**
+	 * the cross product of two vectors if defined
+	 * 
+	 * @param the vector to calculate the cross product with this vector
+	 * @return a vector as a result of the operation
+	 */
 	public Vector cross(Vector vector) {
 		return new Vector(new double[] { 0, 0 });
 	}
-
+	
+	/**
+	 * the dot product of two vectors
+	 * 
+	 * @param the vector to calculate the dotproduct with this vector
+	 * @return a float as a result of the operation
+	 */
 	public double dot(Vector vector) {
 		double scalar = 0;
 		for (int i = 0; i < this.components.length; i++) {
@@ -65,7 +83,12 @@ public class Vector {
 		return scalar;
 	}
 
-
+	/**
+	 * returns the component at index [0,1,..]
+	 * 
+	 * @param index of a component of the vector
+	 * @return the components value
+	 */
 	public double getComponent(int index) {
 		if (index >= this.components.length) {
 			return 0;
@@ -74,6 +97,11 @@ public class Vector {
 		}
 	}
 
+	/**
+	 * the norm of this vector
+	 * 
+	 * @return The length of the vector
+	 */
 	public double norm() {
 		if (!lengthCalculated) {
 			for (int i = 0; i < this.components.length; i++) {
@@ -84,12 +112,21 @@ public class Vector {
 		}
 		return this.length;
 	}
-
+	/**
+	 * subtracting two vectors
+	 * 
+	 * @param the vector to be subtracted from this vector
+	 * @return a vector as a result of the operation
+	 */
 	public Vector sub(Vector vector) {
 		return new Vector(new double[] { components[0] - vector.getComponent(0),
 				components[1] - vector.getComponent(1) });
 	}
-
+	/**
+	 * normalise the vector
+	 * 
+	 * @return a vector with length 1.0 in the same direction
+	 */
 	public Vector normalize() {
 		double[] newComponents = new double[this.components.length];
 		for (int i = 0; i < this.components.length; i++) {
@@ -98,12 +135,21 @@ public class Vector {
 		return new Vector(newComponents);
 	}
 
-
+	/**
+	 * returns a duplicate of this vector
+	 * 
+	 * @return
+	 */
 	public Vector clone() {
 		return new Vector(this.components);
 	}
 
-	
+	/**
+	 * returns a multiple of the factor (stretched)
+	 * 
+	 * @param factor to multiply this vector with
+	 * @return a scaled copy of the actual vector
+	 */
 	public Vector multiply(double factor) {
 		double[] newComponents = new double[this.components.length];
 		for (int i = 0; i < this.components.length; i++) {
@@ -112,12 +158,22 @@ public class Vector {
 		return new Vector(newComponents);
 	}
 
-	
+	/**
+	 * returns x: value, y:value
+	 * 
+	 * @return
+	 */
+	@Override
 	public String toString() {
 		return "x: " + this.components[0] + ", y: " + this.components[1];
 	}
 
-
+	/**
+	 * returns the vector rotated by angle, angle is measured in radians
+	 * 
+	 * @param an angle in the radiant notation [0,2*PI]
+	 * @return a vector rotated by the input angle
+	 */
 	public Vector rotate(double angle) {
 		double newAngle = this.getAngle() + angle;
 		return new Vector(new double[] {
@@ -126,8 +182,9 @@ public class Vector {
 	}
 
 	/**
-	 * Return the angle to the X axis 
-
+	 * the result is the angle between this vector and the x axis in radians
+	 * 
+	 * @return an angle in radiant
 	 */
 	public double getAngle() {
 		Vector newThis = this.normalize();
@@ -159,10 +216,18 @@ public class Vector {
 		}
 	}
 	
+	/**
+	 * Return the first component
+	 * @return Vector's first component
+	 */
 	public double getX() {
 		return this.components[0];
 	}
 	
+	/**
+	 * Return the second component
+	 * @return Vector's second component
+	 */
 	public double getY() {
 		return this.components[1];
 	}
