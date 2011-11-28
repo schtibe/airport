@@ -45,8 +45,14 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 				return position;
 			case air.Aircraft.ON_GROUND:
 			case air.Aircraft.WAITING_FOR_TAKE_OFF:
-			case air.Aircraft.TAKING_OFF:
 				return this.getGroundPosition();
+			case air.Aircraft.TAKING_OFF:
+				return this.getTakeoffPosition();
+			case air.Aircraft.ON_HOLDING_LOOP:
+				return this.getHoldingLoopPosition();
+			case air.Aircraft.LANDING:
+			case air.Aircraft.ARRIVING: 
+				return this.getLandingPosition();				
 		}
 		
 		return new Vector(new double[] {500000, 200000});
@@ -58,8 +64,12 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		
 		return new Vector(new double[] {xPos, yPos});
 	}
+	
+	private Vector getTakeoffPosition() {
+		return this.getGroundPosition();		
+	}
 
-	protected Vector getFlightPosition() {
+	private Vector getFlightPosition() {
 		double lastX   = this.aircraft.getLastX();
 		double lastY   = this.aircraft.getLastY();
 		
@@ -80,4 +90,51 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 				lastY + tail.getComponent(1)
 		});
 	}
+	
+	private Vector getHoldingLoopPosition() {
+		
+		// end of the runway of destination airport
+		double lastX   = this.aircraft.getLastX();
+		double lastY   = this.aircraft.getLastY();
+		
+		long t0        = this.aircraft.getLastTime();
+		long t         = System.currentTimeMillis() - 
+							SimWorld.getInstance().getSimulator().getRtStartTime() - t0 * 
+							SimWorld.getInstance().getTimeScale();
+		
+		long speed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
+		
+		Vector runwayBegin = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX1(),
+						this.aircraft.getCurrentAirPort().getY1()
+						}
+				);
+		
+		Vector runwayEnd = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX2(),
+						this.aircraft.getCurrentAirPort().getY2()
+						}
+				);
+		
+		Vector runway = runwayEnd.sub(runwayBegin);
+		Vector runwayRotated = runway.rotate(Math.PI /  2);
+		
+		// angular velocity
+		double w = 0.005;
+
+		Vector n = runwayBegin.add(runway.multiply(Math.cos((t - t0) * w)));
+		n = n.add(runwayRotated.multiply(Math.sin((t - t0) * w)));	
+		return n;		
+	}
+	
+	private Vector getLandingPosition(){
+		double xPos = this.aircraft.getCurrentAirPort().getX2();
+		double yPos = this.aircraft.getCurrentAirPort().getY2();
+		
+		return new Vector(new double[] {xPos, yPos});
+	}
+	
+	
 }
