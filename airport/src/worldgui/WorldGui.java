@@ -30,9 +30,10 @@ public class WorldGui extends Thread {
         SimWorld.getInstance().setScene(this.scene);
         //QGraphicsRectItem rect = scene.addRect(0,0,100,100);
         this.view = new QGraphicsView(this.scene);
-        view.show();
-        this.initObjects();
+        view.setFixedSize(1200, 900);
         
+        view.show();
+        this.initObjects();        
         setTimer();
  
         QApplication.exec();

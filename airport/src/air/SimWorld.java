@@ -62,7 +62,7 @@ public class SimWorld {
 				+ "]";
 	}
 	
-	long timeScale = 100;
+	long timeScale = 10;
 
 	public long getTimeScale() {
 		return timeScale;
@@ -103,10 +103,10 @@ public class SimWorld {
 	}
 	
 	public double getWorldHeight() {
-		return 600;
+		return 800;
 	}
 	
 	public double getWorldWidth() {
-		return 800;
+		return 1000;
 	}
 }
