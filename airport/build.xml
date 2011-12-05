@@ -6,32 +6,32 @@
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="airport">
     <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../../opt/eclipse"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
     <path id="airport.classpath">
         <pathelement location="bin"/>
+        <pathelement location="lib/qtjambi-4.7.0.jar"/>
+        <pathelement location="lib/qtjambi-linux64-gcc-4.7.0.jar"/>
+        <pathelement location="lib/qtjambi-util-4.7.0.jar"/>
+        <pathelement location="lib/qtjambi-linux32-gcc-4.7.0.jar"/>
     </path>
-
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
+                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
     </target>
-
     <target name="clean">
         <delete dir="bin"/>
     </target>
-
     <target depends="clean" name="cleanall"/>
-
     <target depends="build-subprojects,build-project" name="build"/>
-
     <target name="build-subprojects"/>
-
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
@@ -39,23 +39,32 @@
             <classpath refid="airport.classpath"/>
         </javac>
     </target>
-
-	<target name="run" depends="Simulator" />
-
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
     <target name="Simulator">
         <java classname="air.Simulator" failonerror="true" fork="yes">
             <classpath refid="airport.classpath"/>
         </java>
     </target>
-
-    <target name="QtTest">
-        <java classname="air.QtTest" failonerror="true" fork="yes">
+    <target name="NativeLibraryManager">
+        <java classname="com.trolltech.qt.internal.NativeLibraryManager" failonerror="true" fork="yes">
             <classpath refid="airport.classpath"/>
         </java>
     </target>
-
-    <target name="NativeLibraryManager">
-        <java classname="com.trolltech.qt.internal.NativeLibraryManager" failonerror="true" fork="yes">
+    <target name="QtTest">
+        <java classname="air.QtTest" failonerror="true" fork="yes">
             <classpath refid="airport.classpath"/>
         </java>
     </target>
