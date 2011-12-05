@@ -51,7 +51,9 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 				return this.getHoldingLoopPosition();
 			case air.Aircraft.LANDING:
 			case air.Aircraft.ARRIVING: 
-				return this.getLandingPosition();				
+				Vector position = this.getLandingPosition();
+				System.err.println(position);;
+				return position;
 		}
 		
 		return new Vector(new double[] {500000, 200000});
@@ -90,8 +92,8 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		long t         = System.currentTimeMillis() - 
 							SimWorld.getInstance().getSimulator().getRtStartTime();
 		long speed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
-		double targetX = this.aircraft.getDestination().getX1();
-		double targetY = this.aircraft.getDestination().getY1();
+		double targetX = this.aircraft.getDestination().getX2();
+		double targetY = this.aircraft.getDestination().getY2();
 		
 		Vector n       = new Vector(new double[] {targetX - lastX, targetY - lastY});
 		n = n.normalize();
@@ -146,7 +148,39 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		double xPos = this.aircraft.getCurrentAirPort().getX2();
 		double yPos = this.aircraft.getCurrentAirPort().getY2();
 		
-		return new Vector(new double[] {xPos, yPos});
+		long t0        = this.aircraft.getLastTime();
+		long t         = System.currentTimeMillis() - 
+							SimWorld.getInstance().getSimulator().getRtStartTime();
+		
+		double runwayLength = this.aircraft.getCurrentAirPort().getRunwayLength();
+		double maxSpeed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
+		double breakAcc     = Math.pow(maxSpeed, 2) / (2 * runwayLength);
+		
+		Vector runwayBegin = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX2(),
+						this.aircraft.getCurrentAirPort().getY2()
+						}
+				);
+		
+		Vector runwayEnd = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX1(),
+						this.aircraft.getCurrentAirPort().getY1()
+						}
+				);
+		
+		Vector runway = runwayEnd.sub(runwayBegin);
+		runway = runway.normalize();
+		Vector head = runway.multiply((t - t0 * SimWorld.getInstance().getTimeScale()) * maxSpeed);
+		Vector tail = runway.multiply(0.5 * Math.pow((t - t0 * SimWorld.getInstance().getTimeScale()), 2) * breakAcc);
+		System.out.println("V_max: " + maxSpeed + ", break_acc: " + breakAcc);
+		System.out.println("head: " + head + ", tail: "+tail);
+		
+		return new Vector(new double[] {
+				xPos + head.getX() - tail.getX(),
+				yPos + head.getY() - tail.getY() 
+		});
 	}
 	
 	
