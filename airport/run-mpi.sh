@@ -20,5 +20,5 @@ export CLASSPATH="${CLASSPATH}:${BASEDIR}/qtjambi-linux32-gcc-4.7.0.jar"
 #export LD_LIBRARY_PATH="/tmp/QtJambi_${USER}_amd64_4.7.0_gcc-20100927-1542/lib/:${LD_LIBRARY_PATH}"
 #export LD_LIBRARY_PATH="${QT_PATH}:${LD_LIBRARY_PATH}"
 export  LD_LIBRARY_PATH="lib/qt-native-${processor}/lib:${LD_LIBRARY_PATH}"
-"${BASEDIR}/lib/p2pmpi/bin/p2pmpirun" -n 3  air.Simulator
+"${BASEDIR}/lib/p2pmpi/bin/p2pmpirun" -n 3 -l xferlist.txt air.Simulator
 
