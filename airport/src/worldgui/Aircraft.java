@@ -46,14 +46,14 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 			case air.Aircraft.WAITING_FOR_TAKE_OFF:
 				return this.getGroundPosition();
 			case air.Aircraft.TAKING_OFF:
-				return this.getTakeoffPosition();
+				Vector position = this.getTakeoffPosition();
+				System.err.println(position);
+				return position;
 			case air.Aircraft.ON_HOLDING_LOOP:
 				return this.getHoldingLoopPosition();
 			case air.Aircraft.LANDING:
 			case air.Aircraft.ARRIVING: 
-				Vector position = this.getLandingPosition();
-				System.err.println(position);;
-				return position;
+				return this.getLandingPosition();
 		}
 		
 		return new Vector(new double[] {500000, 200000});
@@ -67,13 +67,33 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 	}
 	
 	private Vector getTakeoffPosition() {
-		double lastX   = this.aircraft.getLastX();
-		double lastY   = this.aircraft.getLastY();
+		double startX   = this.aircraft.getCurrentAirPort().getX1();
+		double startY   = this.aircraft.getCurrentAirPort().getY1();
+		double endX     = this.aircraft.getCurrentAirPort().getX2();
+		double endY     = this.aircraft.getCurrentAirPort().getY2();
 		
-		long t0        = this.aircraft.getLastTime();
+		long t0        = this.aircraft.getLastTime() * SimWorld.getInstance().getTimeScale();
 		long t         = System.currentTimeMillis() - 
-							SimWorld.getInstance().getSimulator().getRtStartTime() - t0 * 
-							SimWorld.getInstance().getTimeScale();	
+							SimWorld.getInstance().getSimulator().getRtStartTime();
+		
+		double speed     = this.getSpeed();
+		double acc       = this.getAcceleration();
+		double t_acc     = speed / acc;
+		
+		Vector n       = new Vector(new double[] {endX - startX, endY - startY});
+		n = n.normalize();
+		
+		System.out.println("t: " + t + " diff " + t0 + t_acc);
+		if (t < t0 + t_acc) {
+			Vector dir = n.multiply(0.5 * Math.pow(t - t0, 2) * acc);
+			System.out.println("Dir: " + dir);
+			return new Vector(new double[] {
+					startX + dir.getX(),
+					startY + dir.getY()
+			});
+		} else {
+			
+		}
 		
 		// accelerate 
 		
@@ -83,6 +103,16 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		
 		return this.getGroundPosition();		
 	}
+	
+	private double getAcceleration() {
+		double acc = this.aircraft.getMaxAcceleration();
+		return acc / SimWorld.getInstance().getTimeScale();
+	}
+	
+	private double getSpeed() {
+		double speed = this.aircraft.getMaxSpeed();
+		return speed / SimWorld.getInstance().getTimeScale();
+	}
 
 	private Vector getFlightPosition() {
 		double lastX   = this.aircraft.getLastX();
@@ -91,7 +121,7 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		long t0        = this.aircraft.getLastTime();
 		long t         = System.currentTimeMillis() - 
 							SimWorld.getInstance().getSimulator().getRtStartTime();
-		long speed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
+		double speed   = this.getSpeed();
 		double targetX = this.aircraft.getDestination().getX2();
 		double targetY = this.aircraft.getDestination().getY2();
 		
