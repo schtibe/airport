@@ -26,7 +26,18 @@ public class Airport implements EventHandler {
 	LinkedList<Aircraft> waitingForTakeOffQueue = new LinkedList<Aircraft>();
 	LinkedList<Aircraft> waitingForLandingQueue = new LinkedList<Aircraft>();
 	
-	public Airport(String name, double x1, double y1, double x2, double y2){
+	private int rank;
+	
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
+	public Airport(String name, int rank, double x1, double y1, double x2, double y2){
+		this.rank = rank;
 		this.name = name;
 		this.x1 = x1;
 		this.y1 = y1;
