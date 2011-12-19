@@ -47,7 +47,7 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 				return this.getGroundPosition();
 			case air.Aircraft.TAKING_OFF:
 				Vector position = this.getTakeoffPosition();
-				System.err.println(position);
+				//System.err.println(position);
 				return position;
 			case air.Aircraft.ON_HOLDING_LOOP:
 				return this.getHoldingLoopPosition();
@@ -83,10 +83,10 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		Vector n       = new Vector(new double[] {endX - startX, endY - startY});
 		n = n.normalize();
 		
-		System.out.println("t: " + t + " diff " + t0 + t_acc);
+		//System.out.println("t: " + t + " diff " + t0 + t_acc);
 		if (t < t0 + t_acc) {
 			Vector dir = n.multiply(0.5 * Math.pow(t - t0, 2) * acc);
-			System.out.println("Dir: " + dir);
+			//System.out.println("Dir: " + dir);
 			return new Vector(new double[] {
 					startX + dir.getX(),
 					startY + dir.getY()
