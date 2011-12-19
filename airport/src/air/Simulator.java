@@ -3,6 +3,8 @@ package air;
 import java.util.Random;
 import java.util.Vector;
 
+import p2pmpi.mpi.MPI;
+
 import worldgui.WorldGui;
 
 
@@ -96,44 +98,45 @@ public class Simulator implements EventScheduler{
 	}
 	
 	public void initWorld(){
-		int n = 100; 
+		int n = 30; 
 		// Random Generator:
 		Random rand = new Random(1234);
 		// create airports
 		String [] airportNames = {"ZÜRICH","GENF","BASEL"};
-		Airport ap = new Airport("ZÜRICH", 684000, 256000, 683000, 259000); 
+		Airport ap = new Airport("ZÜRICH", 0, 684000, 256000, 683000, 259000); 
 		world.addAirport(ap);
-		ap = new Airport("GENF", 497000, 120000, 499000, 122000); 
+		ap = new Airport("GENF", 1, 497000, 120000, 499000, 122000); 
 		world.addAirport(ap);
-		ap = new Airport("BASEL", 599000, 287000, 601000, 288000); 
+		ap = new Airport("BASEL", 2, 599000, 287000, 601000, 288000); 
 		world.addAirport(ap);
 		
-		// create 100 aircrafts and choose an arbitrary airport
+		int rank = MPI.COMM_WORLD.Rank();
+		// create 30 aircrafts and choose an arbitrary airport for this airport
 		for (int i=0;i<n;i++){
 			// Random Airport:
-			ap = world.getAirport(airportNames[rand.nextInt(airportNames.length)]);
-			Aircraft ac = new Aircraft("X"+1000+i,ap);
+			ap = world.getAirport(airportNames[rank]);
+			Aircraft ac = new Aircraft("X" + (rank + 1) * 1000 +i, ap);
 			world.addAircraft(ac);			
 		}
 		// create FlightPlans for all aircrafts
 		for (int i=0;i<n;i++){
 			// Random Airport:
-			Aircraft ac = world.getAircraft("X"+1000+i);
+			Aircraft ac = world.getAircraft("X" + (rank + 1) * 1000+i);
 			// first Flight:
 			ap = world.getAirport(airportNames[rand.nextInt(3)]);
 			while (ap == ac.getCurrentAirPort()){
 				ap = world.getAirport(airportNames[rand.nextInt(3)]);
 			}			
-			Flight f = new Flight(rand.nextInt(1000),ap);
+			Flight f = new Flight(rand.nextInt(10),ap);
 			ac.getFlightPlan().addFlight(f);
 			// Return flight
-			f = new Flight(rand.nextInt(1000),ac.getCurrentAirPort());
+			f = new Flight(rand.nextInt(1000), ac.getCurrentAirPort());
 		}
 		
 		// System.out.println(world);
 		// schedule initial events
 		for (int i=0;i<n;i++){
-			Aircraft ac = world.getAircraft("X"+1000+i);
+			Aircraft ac = world.getAircraft("X" + (rank + 1) * 1000+i);
 			Flight f = ac.getFlightPlan().removeNextFlight();
 			ac.setDestination(f.getDestination());
 			ap = ac.getCurrentAirPort();
@@ -143,6 +146,7 @@ public class Simulator implements EventScheduler{
 	}
 	
 	static public void main(String [] argv){
+		MPI.Init(argv);
 		SimWorld.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
 		sim.initWorld();
@@ -151,7 +155,7 @@ public class Simulator implements EventScheduler{
 		WorldGui wg = new WorldGui();
 		new Thread(wg).start();
 		sim.runSimulation(); // main simulation loop
-		
+		MPI.Finalize();
 	}
 	
 }
