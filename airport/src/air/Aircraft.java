@@ -23,7 +23,6 @@ public class Aircraft implements EventHandler{
 	private Airport origin;
 	private Airport destination;
 	private FlightPlan flightPlan=new FlightPlan();
-	private long remainingFuel;
 	private long maxSpeed=100;
 	private long maxAcceleration=5;
 	
@@ -82,12 +81,6 @@ public class Aircraft implements EventHandler{
 	}
 	public void setDestination(Airport destination) {
 		this.destination = destination;
-	}
-	public long getRemainingFuel() {
-		return remainingFuel;
-	}
-	public void setRemainingFuel(long remainingFuel) {
-		this.remainingFuel = remainingFuel;
 	}
 	public long getMaxSpeed() {
 		return maxSpeed;
