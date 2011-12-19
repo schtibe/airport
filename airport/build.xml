@@ -17,6 +17,7 @@
         <pathelement location="lib/qtjambi-linux64-gcc-4.7.0.jar"/>
         <pathelement location="lib/qtjambi-util-4.7.0.jar"/>
         <pathelement location="lib/qtjambi-linux32-gcc-4.7.0.jar"/>
+        <pathelement location="lib/p2pmpi/p2pmpi.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -29,7 +30,7 @@
     </target>
 	<target name="jar" depends="build">
 		<jar basedir="${build}" destfile="airport.jar" filesetmanifest="skip">
-			<zipgroupfileset dir="lib" includes="*.jar" excludes=""/>
+			<zipgroupfileset dir="lib" includes="**.jar" excludes=""/>
 			<manifest>
 				<attribute name="Main-Class" value="air.Simulator" />
 				<!--attribute name="Class-Path" value="lib/qtjambi-4.7.0.jar lib/qtjambi-linux32-gcc-4.7.0.jar lib/qtjambi-linux64-gcc-4.7.0.jar lib/qtjambi-util-4.7.0.jar" /-->
