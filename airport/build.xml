@@ -10,6 +10,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+	<property name="build" location="bin" />
     <path id="airport.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/qtjambi-4.7.0.jar"/>
@@ -26,6 +27,14 @@
             </fileset>
         </copy>
     </target>
+	<target name="jar" depends="build">
+		<jar basedir="${build}" destfile="airport.jar">
+			<manifest>
+				<attribute name="Main-Class" value="air.Simulator" />
+				<attribute name="Class-Path" value="lib/qtjambi-4.7.0.jar lib/qtjambi-linux32-gcc-4.7.0.jar lib/qtjambi-linux64-gcc-4.7.0.jar lib/qtjambi-util-4.7.0.jar" />
+			</manifest>
+		</jar>
+	</target>
     <target name="clean">
         <delete dir="bin"/>
     </target>
