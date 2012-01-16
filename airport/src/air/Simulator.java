@@ -3,6 +3,8 @@ package air;
 import java.util.Random;
 import java.util.Vector;
 
+import mpi.MpiMessage;
+
 import p2pmpi.mpi.MPI;
 
 import worldgui.WorldGui;
@@ -66,6 +68,9 @@ public class Simulator implements EventScheduler{
 		long target = now * SimWorld.getInstance().getTimeScale();
 		
 		do {
+			if (SimWorld.getInstance().incomingMessages.size() > 0) {
+				System.err.println(SimWorld.getInstance().incomingMessages.poll().testText);
+			}
 			try {
 				//Thread.sleep(target - elapsedTime);
 				Thread.sleep(1);
@@ -88,6 +93,9 @@ public class Simulator implements EventScheduler{
 	 *  This is the main simulation loop
 	 */
 	public void runSimulation(){
+		MpiMessage msg = new MpiMessage();
+		msg.testText = "hallo von " + MPI.COMM_WORLD.Rank();
+		SimWorld.getInstance().outgoingMessages.add(msg);
 		this.rtStartTime = System.currentTimeMillis();
 		int evCnt = 0;
 		while (evList.size() > 0){
@@ -140,7 +148,7 @@ public class Simulator implements EventScheduler{
 			Flight f = ac.getFlightPlan().removeNextFlight();
 			ac.setDestination(f.getDestination());
 			ap = ac.getCurrentAirPort();
-			Event e = new Event(Event.READY_FOR_DEPARTURE,ap,f.getTimeGap(),ap,ac);
+			Event e = new Event(Event.READY_FOR_DEPARTURE, ap, f.getTimeGap(), ap, ac);
 			scheduleEvent(e);
 		}
 	}

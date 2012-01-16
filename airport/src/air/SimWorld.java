@@ -1,6 +1,14 @@
 package air;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import p2pmpi.mpi.MPI;
+
+import mpi.MpiMessage;
+import mpi.RecvThread;
+import mpi.SendThread;
 
 import com.trolltech.qt.gui.QGraphicsScene;
 
@@ -18,7 +26,10 @@ public class SimWorld {
 	
 	private Simulator simulator;
 	
-	private SimWorld(){}
+	private SimWorld(){
+		this.sendThread.start();
+		this.recvThread.start();
+	}
 	
 	public void addAirport(Airport ap){
 		if (airports.containsKey(ap.getName())) throw new RuntimeException("Duplicate airport name");
@@ -36,7 +47,7 @@ public class SimWorld {
 		return aircrafts.get(name);
 	}
 	
-	public static SimWorld getInstance(){
+	public static SimWorld getInstance(){	
 		return instance;
 	}
 	
@@ -62,7 +73,7 @@ public class SimWorld {
 				+ "]";
 	}
 	
-	long timeScale = 10;
+	long timeScale = 100;
 
 	public long getTimeScale() {
 		return timeScale;
@@ -109,4 +120,26 @@ public class SimWorld {
 	public double getWorldWidth() {
 		return 1000;
 	}
+	
+	public int getSendRank() {
+		int thisRank = MPI.COMM_WORLD.Rank();
+		int procCount = MPI.COMM_WORLD.Size();
+		
+		return (thisRank + 1) % procCount;
+	}
+	
+	public int getRecvRank() {
+		int thisRank = MPI.COMM_WORLD.Rank();
+		int procCount = MPI.COMM_WORLD.Size();
+		
+		return (thisRank + procCount - 1) % procCount;
+	}
+	
+	public Queue<MpiMessage> incomingMessages = new LinkedList<MpiMessage>();
+	
+	public Queue<MpiMessage> outgoingMessages = new LinkedList<MpiMessage>();
+	
+	RecvThread recvThread = new RecvThread();
+	
+	SendThread sendThread = new SendThread();
 }
