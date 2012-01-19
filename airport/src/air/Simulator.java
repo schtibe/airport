@@ -93,10 +93,11 @@ public class Simulator implements EventScheduler{
 		this.rtStartTime = System.currentTimeMillis();
 		int evCnt = 0;
 		
-		//SimWorld.getInstance().setSendThread(new SendThread(this));
+		SimWorld.getInstance().setSendThread(new SendThread(this));
 		//SimWorld.getInstance().setRecvThread(new RecvThread());
-		//SimWorld.getInstance().getSendThread().start();
 		//SimWorld.getInstance().getRecvThread().start();
+		SimWorld.getInstance().getSendThread().start();
+		
 		
 		while (evList.size() > 0){
 			processNextEvent();
