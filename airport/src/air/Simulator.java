@@ -93,10 +93,10 @@ public class Simulator implements EventScheduler{
 		this.rtStartTime = System.currentTimeMillis();
 		int evCnt = 0;
 		
-		SimWorld.getInstance().setSendThread(new SendThread(this));
-		SimWorld.getInstance().setRecvThread(new RecvThread());
-		SimWorld.getInstance().getSendThread().start();
-		SimWorld.getInstance().getRecvThread().start();
+		//SimWorld.getInstance().setSendThread(new SendThread(this));
+		//SimWorld.getInstance().setRecvThread(new RecvThread());
+		//SimWorld.getInstance().getSendThread().start();
+		//SimWorld.getInstance().getRecvThread().start();
 		
 		while (evList.size() > 0){
 			processNextEvent();
@@ -166,7 +166,7 @@ public class Simulator implements EventScheduler{
 		sim.gui = new Gui();
 		sim.gui.init();
 		WorldGui wg = new WorldGui();
-		new Thread(wg).start();
+		wg.start();
 		sim.runSimulation(); // main simulation loop
 		MPI.Finalize();
 	}
