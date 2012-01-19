@@ -36,7 +36,8 @@ public class MpiMessage {
 	 */
 	public MpiMessage(long timeStamp, long lookAhead){
 		setTimeStamp(timeStamp);
-		setLookAhead(lookAhead);		
+		setLookAhead(lookAhead);	
+		setType(MpiMessage.TYPE_NULL);
 	}
 	
 	public boolean isNullMessage(){
