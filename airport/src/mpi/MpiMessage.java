@@ -1,20 +1,68 @@
 package mpi;
 
-public class MpiMessage {
+import java.io.Serializable;
 
+public class MpiMessage implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private long timeStamp;
+	private long lookAhead;
 	private int type;
+	
+	public static final int TYPE_EVENT = 0;
+	public static final int TYPE_NULL = 1;
 	
 	private String aircraft = "";
 	private String airport = "";
 	
-	public MpiMessage(long timeStamp, int type, String aircraft, String airport){
+	/**
+	 * New aircraft event 
+	 * 
+	 * @param timeStamp
+	 * @param lookAhead
+	 * @param aircraft
+	 * @param airport
+	 */
+	public MpiMessage(long timeStamp, long lookAhead, String aircraft, String airport){
 		setTimeStamp(timeStamp);
-		setType(type);
+		setLookAhead(lookAhead);
+		setType(MpiMessage.TYPE_EVENT);
 		setAircraft(aircraft);
-		setAirport(airport);
+		setAirport(airport);		
 	}
 
+	/**
+	 * New null message
+	 * 
+	 * @param timeStamp
+	 * @param lookAhead
+	 */
+	public MpiMessage(long timeStamp, long lookAhead){
+		setTimeStamp(timeStamp);
+		setLookAhead(lookAhead);	
+		setType(MpiMessage.TYPE_NULL);
+	}
+	
+	public boolean isNullMessage(){
+		if(this.type == MpiMessage.TYPE_NULL){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isEvent(){
+		if(!isNullMessage()){
+			return true;
+		}
+		
+		return false;
+	}	
+	
 	public long getTimeStamp() {
 		return timeStamp;
 	}
@@ -29,6 +77,14 @@ public class MpiMessage {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public long getLookAhead() {
+		return lookAhead;
+	}
+
+	public void setLookAhead(long lookAhead) {
+		this.lookAhead = lookAhead;
 	}
 
 	public String getAircraft() {
