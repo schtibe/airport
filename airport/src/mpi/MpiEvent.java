@@ -77,6 +77,6 @@ public class MpiEvent {
 	 * use the start-time of an aircraft
 	 */
 	public static long getDefaultLookAhead() {
-		return 100;
+		return 1000;
 	}
 }
