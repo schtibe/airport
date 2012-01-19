@@ -7,7 +7,14 @@ import java.util.List;
 import p2pmpi.mpi.MPI;
 
 public class LookaheadQueue {
+	/**
+	 * Use a fixed array to be faster
+	 */
 	List<Long> queues[];
+	
+	/**
+	 * The amount of processes (and therefore incoming queues)
+	 */
 	int LPcount = 0;
 	
 	public LookaheadQueue() {
