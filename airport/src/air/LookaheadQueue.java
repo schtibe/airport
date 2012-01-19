@@ -33,6 +33,7 @@ public class LookaheadQueue {
 	 * @param timestamp The lookahead value
 	 */
 	public void addLookahead(int sender, Long timestamp) {
+		System.err.println("Adding a lookahead from " + sender + " with TS " + timestamp);
 		this.queues[sender].add(timestamp);
 		Collections.sort(this.queues[sender]);
 	}

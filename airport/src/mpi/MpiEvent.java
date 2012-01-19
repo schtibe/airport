@@ -1,6 +1,6 @@
 package mpi;
 
-import air.*;
+import air.SimWorld;
 
 public class MpiEvent {
 	
@@ -37,6 +37,10 @@ public class MpiEvent {
 		
 	}
 
-	
-	
+	/**
+	 * Return some default lookahead to constantly send null msgs
+	 */
+	public static long getDefaultLookAhead() {
+		return 10;
+	}
 }

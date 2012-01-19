@@ -3,8 +3,10 @@ package air;
 import java.util.Random;
 import java.util.Vector;
 
-import p2pmpi.mpi.MPI;
+import mpi.RecvThread;
+import mpi.SendThread;
 
+import p2pmpi.mpi.MPI;
 import worldgui.WorldGui;
 
 
@@ -66,9 +68,6 @@ public class Simulator implements EventScheduler{
 		long target = now * SimWorld.getInstance().getTimeScale();
 		
 		do {
-			if (SimWorld.getInstance().incomingMessages.size() > 0) {
-				
-			}
 			try {
 				//Thread.sleep(target - elapsedTime);
 				Thread.sleep(1);
@@ -93,11 +92,22 @@ public class Simulator implements EventScheduler{
 	public void runSimulation(){
 		this.rtStartTime = System.currentTimeMillis();
 		int evCnt = 0;
+		
+		SimWorld.getInstance().setSendThread(new SendThread(this));
+		SimWorld.getInstance().setRecvThread(new RecvThread());
+		SimWorld.getInstance().getSendThread().start();
+		SimWorld.getInstance().getRecvThread().start();
+		
 		while (evList.size() > 0){
 			processNextEvent();
 			evCnt++;
 		}
 		System.out.println("Processed "+ evCnt +" events.");
+	}
+	
+	public void init() {
+		SimWorld.getInstance().setSimulator(this);
+		this.initWorld();
 	}
 	
 	public void initWorld(){
@@ -152,7 +162,7 @@ public class Simulator implements EventScheduler{
 		MPI.Init(argv);
 		SimWorld.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
-		sim.initWorld();
+		sim.init();
 		sim.gui = new Gui();
 		sim.gui.init();
 		WorldGui wg = new WorldGui();
