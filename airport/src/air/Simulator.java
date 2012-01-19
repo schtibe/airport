@@ -3,8 +3,6 @@ package air;
 import java.util.Random;
 import java.util.Vector;
 
-import mpi.MpiMessage;
-
 import p2pmpi.mpi.MPI;
 
 import worldgui.WorldGui;
@@ -22,7 +20,7 @@ public class Simulator implements EventScheduler{
 
 	private Gui gui;
 	
-	private  Vector<Event> evList; // time ordered list
+	private Vector<Event> evList; // time ordered list
 	private long rtStartTime;
 	
 	public long getRtStartTime() {
@@ -69,7 +67,7 @@ public class Simulator implements EventScheduler{
 		
 		do {
 			if (SimWorld.getInstance().incomingMessages.size() > 0) {
-				System.err.println(SimWorld.getInstance().incomingMessages.poll().testText);
+				
 			}
 			try {
 				//Thread.sleep(target - elapsedTime);
@@ -93,16 +91,13 @@ public class Simulator implements EventScheduler{
 	 *  This is the main simulation loop
 	 */
 	public void runSimulation(){
-		MpiMessage msg = new MpiMessage();
-		msg.testText = "hallo von " + MPI.COMM_WORLD.Rank();
-		SimWorld.getInstance().outgoingMessages.add(msg);
 		this.rtStartTime = System.currentTimeMillis();
 		int evCnt = 0;
 		while (evList.size() > 0){
 			processNextEvent();
 			evCnt++;
 		}
-		System.out.println("Processed "+evCnt+" events.");
+		System.out.println("Processed "+ evCnt +" events.");
 	}
 	
 	public void initWorld(){
