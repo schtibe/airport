@@ -1,7 +1,14 @@
 package mpi;
 
-public class MpiMessage {
+import java.io.Serializable;
 
+public class MpiMessage implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private long timeStamp;
 	private long lookAhead;
 	private int type;
