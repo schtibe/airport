@@ -8,6 +8,7 @@ public class RecvThread extends Thread {
 	public void run() {
 		while(true) {
 			MpiMessage[] data = new MpiMessage[1];
+			System.err.println("Receiving messages");
 			Status status = MPI.COMM_WORLD.Recv(data, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, 1);
 			System.err.println("Received something");
 			

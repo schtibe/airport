@@ -94,8 +94,8 @@ public class Simulator implements EventScheduler{
 		int evCnt = 0;
 		
 		SimWorld.getInstance().setSendThread(new SendThread(this));
-		//SimWorld.getInstance().setRecvThread(new RecvThread());
-		//SimWorld.getInstance().getRecvThread().start();
+		SimWorld.getInstance().setRecvThread(new RecvThread());
+		SimWorld.getInstance().getRecvThread().start();
 		SimWorld.getInstance().getSendThread().start();
 		
 		
@@ -109,6 +109,7 @@ public class Simulator implements EventScheduler{
 	public void init() {
 		SimWorld.getInstance().setSimulator(this);
 		this.initWorld();
+		SimWorld.getInstance().setLookaheadQueue(new LookaheadQueue());
 	}
 	
 	public void initWorld(){

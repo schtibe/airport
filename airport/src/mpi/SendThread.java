@@ -26,6 +26,8 @@ public class SendThread extends Thread {
 			} else {
 				long rt = System.currentTimeMillis();
 				long elapsedTime = (rt - this.simulator.getRtStartTime());
+				System.err.println("elaped time " + elapsedTime);
+				System.err.println("lookahed " + this.lookAhead);
 				if (elapsedTime >= this.lookAhead) {
 					this.sendNullMessage(elapsedTime, this.defaultLookAhead, -1);
 				}
@@ -65,7 +67,7 @@ public class SendThread extends Thread {
 				System.err.println("Sending null message to " + lp);
 				MpiMessage[] dataBuf = new MpiMessage[1];
 				dataBuf[0] = new MpiMessage(timeStamp, lookAhead);
-				MPI.COMM_WORLD.Isend(dataBuf, 0, 1, MPI.OBJECT, lp, 1);
+				MPI.COMM_WORLD.Send(dataBuf, 0, 1, MPI.OBJECT, lp, 1);
 			}
 		}
 		
