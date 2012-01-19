@@ -17,7 +17,8 @@ public class MpiMessage implements Serializable {
 	public static final int TYPE_NULL = 1;
 	
 	private String aircraft = "";
-	private String airport = "";
+	private String fromAirport = "";
+	private String toAirport = "";
 	
 	/**
 	 * New aircraft event 
@@ -27,12 +28,13 @@ public class MpiMessage implements Serializable {
 	 * @param aircraft
 	 * @param airport
 	 */
-	public MpiMessage(long timeStamp, long lookAhead, String aircraft, String airport){
+	public MpiMessage(long timeStamp, long lookAhead, String aircraft, String fromAirport, String toAirport){
 		setTimeStamp(timeStamp);
 		setLookAhead(lookAhead);
 		setType(MpiMessage.TYPE_EVENT);
 		setAircraft(aircraft);
-		setAirport(airport);		
+		setFromAirport(fromAirport);
+		setToAirport(toAirport);
 	}
 
 	/**
@@ -95,12 +97,21 @@ public class MpiMessage implements Serializable {
 		this.aircraft = aircraft;
 	}
 
-	public String getAirport() {
-		return airport;
+	public String getFromAirport() {
+		return fromAirport;
 	}
 
-	public void setAirport(String airport) {
-		this.airport = airport;
+	public void setFromAirport(String fromAirport) {
+		this.fromAirport = fromAirport;
 	}
+
+	public String getToAirport() {
+		return toAirport;
+	}
+
+	public void setToAirport(String toAirport) {
+		this.toAirport = toAirport;
+	}
+
 	
 }
