@@ -39,8 +39,11 @@ public class MpiEvent {
 
 	/**
 	 * Return some default lookahead to constantly send null msgs
+	 * 
+	 * @todo This should somewhat be a reasonable value. Probably 
+	 * use the start-time of an aircraft
 	 */
 	public static long getDefaultLookAhead() {
-		return 10;
+		return 100;
 	}
 }
