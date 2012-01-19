@@ -1,12 +1,21 @@
 package mpi;
 
+import air.Airport;
+import air.Aircraft;
+import air.Event;
+import air.EventScheduler;
 import air.SimWorld;
 
 public class MpiEvent {
 	
+	/**
+	 * Events received from MPI are always new aircrafts, 
+	 * we need to calculate the arrival date and add it to the 
+	 * local event queue 
+	 * 
+	 * @param msg
+	 */
 	public static void createEventFromMessage(MpiMessage msg){
-		// it's always a END_TAKEOFF event
-		
 		// process only events, not null messages
 		if(!msg.isEvent()){
 			return;
@@ -19,22 +28,46 @@ public class MpiEvent {
 		// simworld instance
 		SimWorld world = SimWorld.getInstance();
 		
+		// event scheduler
+		EventScheduler sched = world.getSimulator();
+		
 		// find airports
-		//Airport fromAp = world.getAirport();
-		//Airport toAp = world.get
+		Airport fromAp = world.getAirport(fromAirportName);
+		Airport toAp = world.getAirport(toAirportName);
 		
-		// create new aircraft
-		/*Aircraft ac = new Aircraft(aircraftName, ap);		
+		// create new aircraft, set departing airport as from, but immediately 
+		// remove it again
+		Aircraft ac = new Aircraft(aircraftName, fromAp);
+		ac.setState(Aircraft.ON_FLIGHT);
+		ac.setLastX(fromAp.getX2());
+		ac.setLastY(fromAp.getY2());
+		ac.setLastTime(msg.getTimeStamp());
+		ac.setDestination(toAp);
+		fromAp.unscribeAircraft(ac);
+		
+		// add aircraft to world 
 		world.addAircraft(ac);
+				
+		// add arrival event to the local airport
+		long duration = (long) (fromAp.getDistanceTo(toAp)/ac.getMaxSpeed());
 		
-		// add arrival event to the airport
-		long duration = (long) (ap.getDistanceTo(ac.destination)/ac.maxSpeed);
-		Event e1 = new Event(Event.ARRIVAL,ac.getDestination(),e.getTimeStamp()+duration,ac.getDestination(),ac); // to do!
-		sched.scheduleEvent(e1);*/
-		
-		
-		
-		
+		Event e1 = new Event(
+				Event.ARRIVAL,
+				ac.getDestination(),
+				msg.getTimeStamp() + duration,
+				ac.getDestination(),
+				ac
+				); // to do!
+		sched.scheduleEvent(e1);
+
+		// process queue event
+		Event e2 = new Event(
+				Event.PROCESS_QUEUES,
+				ac.getDestination(),
+				msg.getTimeStamp() + duration - 1,  // TODO: really needed?
+				ac.getDestination(),
+				null);
+		sched.scheduleEvent(e2);	
 	}
 
 	/**
