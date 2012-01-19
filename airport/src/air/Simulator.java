@@ -25,6 +25,8 @@ public class Simulator implements EventScheduler{
 	private Vector<Event> evList; // time ordered list
 	private long rtStartTime;
 	
+	private WorldClock clock = new WorldClock();
+	
 	public long getRtStartTime() {
 		return rtStartTime;
 	}
@@ -63,27 +65,20 @@ public class Simulator implements EventScheduler{
 		Event e = evList.remove(0);
 		now = e.getTimeStamp();
 		
-		long rt = System.currentTimeMillis();
-		long elapsedTime = (rt - this.rtStartTime);
-		long target = now * SimWorld.getInstance().getTimeScale();
+		Long smallestLookahead = SimWorld.getInstance().getLookaheadQueue().getSmallestLookahead();
 		
-		do {
-			try {
-				//Thread.sleep(target - elapsedTime);
-				Thread.sleep(1);
-			} catch (InterruptedException ex) {
-				ex.printStackTrace();
-			}
-			rt = System.currentTimeMillis();
-			elapsedTime = (rt - this.rtStartTime);
-		} while (elapsedTime < target);
-
-
+		if (e.getTimeStamp() > clock.currentSimulationTime()) {
+			do {
+				clock.sleepUntil(smallestLookahead);
+			} while (now > smallestLookahead);
+			
+			clock.sleepUntil(e.getTimeStamp());
+		}
+			
 		gui.println(e.toString()); // log the event
 		e.getEventHandler().processEvent(e,this);
 		//log the state of the object which is the target of this 
 		gui.println(e.getEventHandler().toString());   
-
 	}
 
 	/**
@@ -97,7 +92,6 @@ public class Simulator implements EventScheduler{
 		SimWorld.getInstance().setRecvThread(new RecvThread());
 		SimWorld.getInstance().getRecvThread().start();
 		SimWorld.getInstance().getSendThread().start();
-		
 		
 		while (evList.size() > 0){
 			processNextEvent();
@@ -167,8 +161,8 @@ public class Simulator implements EventScheduler{
 		sim.init();
 		sim.gui = new Gui();
 		sim.gui.init();
-		WorldGui wg = new WorldGui();
-		wg.start();
+		//WorldGui wg = new WorldGui();
+		//new Thread(wg).start();
 		sim.runSimulation(); // main simulation loop
 		MPI.Finalize();
 	}

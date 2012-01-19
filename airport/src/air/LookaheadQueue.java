@@ -32,7 +32,7 @@ public class LookaheadQueue {
 	 * @param sender Who sent the lookahead 
 	 * @param timestamp The lookahead value
 	 */
-	public void addLookahead(int sender, Long timestamp) {
+	public synchronized void addLookahead(int sender, Long timestamp) {
 		System.err.println("Adding a lookahead from " + sender + " with TS " + timestamp);
 		this.queues[sender].add(timestamp);
 		Collections.sort(this.queues[sender]);
@@ -49,7 +49,7 @@ public class LookaheadQueue {
 	 * the 0-position value we take the smallest from the queue
 	 * to check which one's the smallest
 	 */
-	public Long getSmallestLookahead() {
+	public synchronized Long getSmallestLookahead() {
 		for (int i = 0; i < this.LPcount; i++) {
 			if (this.queues[i].size() == 0) {
 				return null;
@@ -71,7 +71,7 @@ public class LookaheadQueue {
 	 * Remove the lookahead from all the queues (in case
 	 * the lookahead is present in several queues)
 	 */
-	public void removeLookeahead(Long lookahead) {
+	public synchronized void removeLookeahead(Long lookahead) {
 		for (int i = 0; i < this.LPcount; i++) {
 			this.queues[i].remove(lookahead);
 		}

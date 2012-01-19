@@ -11,12 +11,18 @@ public class RecvThread extends Thread {
 			System.err.println("Receiving messages");
 			Status status = MPI.COMM_WORLD.Recv(data, 0, 1, MPI.OBJECT, MPI.ANY_SOURCE, 1);
 			System.err.println("Received something");
-			
 			MpiEvent.createEventFromMessage(data[0]);
 
 			int sender = status.source;
 			long timestamp = data[0].getTimeStamp();
 			SimWorld.getInstance().getLookaheadQueue().addLookahead(sender, timestamp);
+			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }
