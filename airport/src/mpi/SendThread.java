@@ -27,9 +27,16 @@ public class SendThread extends Thread {
 				long rt = System.currentTimeMillis();
 				long elapsedTime = (rt - this.simulator.getRtStartTime());
 				if (elapsedTime >= this.lookAhead) {
-					//this.sendNullMessage(elapsedTime, this.defaultLookAhead, -1);
+					this.sendNullMessage(elapsedTime, this.defaultLookAhead, -1);
 				}
 			}
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	
@@ -55,12 +62,13 @@ public class SendThread extends Thread {
 		
 		for (int lp = 0; lp < LPcount; lp++) {
 			if (lp != excludeRank && lp != selfRank) {
+				System.err.println("Sending null message to " + lp);
 				MpiMessage[] dataBuf = new MpiMessage[1];
 				dataBuf[0] = new MpiMessage(timeStamp, lookAhead);
-				MPI.COMM_WORLD.Send(dataBuf, 0, 1, MPI.OBJECT, lp, 1);
+				MPI.COMM_WORLD.Isend(dataBuf, 0, 1, MPI.OBJECT, lp, 1);
 			}
 		}
 		
-		this.lookAhead = lookAhead;
+		this.lookAhead = timeStamp + lookAhead;
 	}
 }
