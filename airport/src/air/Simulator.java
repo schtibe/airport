@@ -7,6 +7,7 @@ import mpi.RecvThread;
 import mpi.SendThread;
 import p2pmpi.mpi.MPI;
 import utils.AirportLogger;
+import worldgui.WorldGui;
 
 
 /**
@@ -194,8 +195,10 @@ public class Simulator implements EventScheduler{
 		sim.init();
 		sim.gui = new Gui();
 		sim.gui.init();
-		//WorldGui wg = new WorldGui();
-		//new Thread(wg).start();
+		
+		WorldGui wg = new WorldGui("xxx");
+		new Thread(wg).start();
+		
 		sim.runSimulation(); // main simulation loop
 		MPI.Finalize();
 	}

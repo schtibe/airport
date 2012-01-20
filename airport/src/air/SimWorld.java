@@ -8,8 +8,6 @@ import mpi.MpiMessage;
 import mpi.RecvThread;
 import mpi.SendThread;
 
-import com.trolltech.qt.gui.QGraphicsScene;
-
 
 /**
  * SimWorld is a container class with airports and aircrafts whith unique name 
@@ -93,15 +91,6 @@ public class SimWorld {
 	
 	public String[] getArgs() {
 		return this.args;
-	}
-	
-	QGraphicsScene scene;
-	public synchronized void setScene(QGraphicsScene scene) {
-		this.scene = scene;
-	}
-	
-	public synchronized QGraphicsScene getScene() {
-		return this.scene;
 	}
 
 	public double getWorldScale() {

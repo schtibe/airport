@@ -10,14 +10,17 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
-	<property name="build" location="bin" />
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+    </path>
     <path id="airport.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/qtjambi-4.7.0.jar"/>
-        <pathelement location="lib/qtjambi-linux64-gcc-4.7.0.jar"/>
-        <pathelement location="lib/qtjambi-util-4.7.0.jar"/>
-        <pathelement location="lib/qtjambi-linux32-gcc-4.7.0.jar"/>
         <pathelement location="lib/p2pmpi/p2pmpi.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+        <pathelement location="lib/apache-log4j-1.2.16/log4j-1.2.16.jar"/>
+        <pathelement location="lib/lwjgl.jar"/>
+        <pathelement location="lib/slick.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -27,16 +30,13 @@
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
     </target>
-	<target name="jar" depends="build">
-		<jar basedir="${build}" destfile="airport.jar" filesetmanifest="skip">
-			<zipgroupfileset dir="lib" includes="**.jar" excludes=""/>
-			<manifest>
-				<attribute name="Main-Class" value="air.Simulator" />
-				<!--attribute name="Class-Path" value="lib/qtjambi-4.7.0.jar lib/qtjambi-linux32-gcc-4.7.0.jar lib/qtjambi-linux64-gcc-4.7.0.jar lib/qtjambi-util-4.7.0.jar" /-->
-			</manifest>
-		</jar>
-	</target>
     <target name="clean">
         <delete dir="bin"/>
     </target>
@@ -49,6 +49,21 @@
             <src path="src"/>
             <classpath refid="airport.classpath"/>
         </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="test"/>
+            <classpath refid="airport.classpath"/>
+        </javac>
+		
+    </target>
+    <target name="jar" depends="build">
+    	<property name="java.library.path" value="lib/"/>
+            <jar basedir="bin" destfile="airport.jar" filesetmanifest="skip">
+                    <zipgroupfileset dir="lib" includes="**.jar" excludes=""/>
+            		<fileset dir="lib" includes="**.so" excludes=""/>
+                    <manifest>
+                            <attribute name="Main-Class" value="air.Simulator" />
+                    </manifest>
+            </jar>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
@@ -63,20 +78,5 @@
     <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
-    </target>
-    <target name="Simulator">
-        <java classname="air.Simulator" failonerror="true" fork="yes">
-            <classpath refid="airport.classpath"/>
-        </java>
-    </target>
-    <target name="NativeLibraryManager">
-        <java classname="com.trolltech.qt.internal.NativeLibraryManager" failonerror="true" fork="yes">
-            <classpath refid="airport.classpath"/>
-        </java>
-    </target>
-    <target name="QtTest">
-        <java classname="air.QtTest" failonerror="true" fork="yes">
-            <classpath refid="airport.classpath"/>
-        </java>
     </target>
 </project>

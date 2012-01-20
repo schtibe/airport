@@ -3,13 +3,7 @@ package worldgui;
 import utils.Vector;
 import air.SimWorld;
 
-import com.trolltech.qt.gui.QGraphicsEllipseItem;
-import com.trolltech.qt.gui.QGraphicsScene;
-import com.trolltech.qt.gui.QPainter;
-import com.trolltech.qt.gui.QStyleOptionGraphicsItem;
-import com.trolltech.qt.gui.QWidget;
-
-public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
+public class Aircraft  {
 
 	private air.Aircraft aircraft;
 	
@@ -20,22 +14,6 @@ public class Aircraft extends QGraphicsEllipseItem implements WorldObject {
 		//this.setRect(this.x, this.y, 10, 10);
 	}
 	
-	public void paint(QPainter p, QStyleOptionGraphicsItem s, QWidget w) {
-		Vector pos = this.getPosition();
-		
-		double xPos = WorldGui.getXPos(pos.getX());
-		double yPos = WorldGui.getYPos(pos.getY());
-		this.setRect(xPos, yPos, 10, 10);
-		p.drawEllipse((int)xPos, (int)yPos, 10, 10);
-	}
-	
-	public void draw(QGraphicsScene scene) {
-		Vector pos = this.getPosition();
-		double xPos = WorldGui.getXPos(pos.getX());
-		double yPos = WorldGui.getYPos(pos.getY());
-		scene.addEllipse((int)xPos, (int)yPos, 10, 10);
-	}
-
 	protected Vector getPosition() {
 		int state = this.aircraft.getState();
 		

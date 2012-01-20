@@ -11,6 +11,7 @@ public class Event {
 	public static final int ENTER_START_QUEUE = 6;
 	public static final int ENTER_LANDING_QUEUE = 7;
 	public static final int PROCESS_QUEUES = 8;
+	public static final int LEAVE_MAP = 9;
 	
 	public String [] typeStrings = {
 			"READY_FOR_DEPARTURE",	
@@ -21,7 +22,8 @@ public class Event {
 			"END_LANDING",
 			"ENTER_START_QUEUE",
 			"ENTER_LANDING_QUEUE",
-			"PROCESS_QUEUES"};	
+			"PROCESS_QUEUES",
+			"LEAVE_MAP"};	
 	
 	private long timeStamp;
 	private int type;
@@ -80,6 +82,7 @@ public class Event {
 		else if (type == ENTER_START_QUEUE ) return;
 		else if (type == ENTER_LANDING_QUEUE) return;
 		else if (type == PROCESS_QUEUES) return;
+		else if (type == LEAVE_MAP) return;
 		else throw new RuntimeException("invalid event type: "+type);
 	}
 	

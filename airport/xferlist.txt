@@ -1,1 +1,6 @@
 airport.jar
+lib/libjinput-linux64.so
+lib/libjinput-linux.so
+lib/liblwjgl64.so
+lib/liblwjgl.so
+lib/libopenal.so
