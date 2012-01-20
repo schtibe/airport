@@ -196,7 +196,7 @@ public class Simulator implements EventScheduler{
 		sim.gui = new Gui();
 		sim.gui.init();
 		
-		WorldGui wg = new WorldGui("xxx");
+		WorldGui wg = new WorldGui("" + MPI.COMM_WORLD.Rank());
 		new Thread(wg).start();
 		
 		sim.runSimulation(); // main simulation loop
