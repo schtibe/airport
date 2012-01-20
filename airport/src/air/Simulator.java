@@ -5,9 +5,8 @@ import java.util.Vector;
 
 import mpi.RecvThread;
 import mpi.SendThread;
-
 import p2pmpi.mpi.MPI;
-import worldgui.WorldGui;
+import utils.AirportLogger;
 
 
 /**
@@ -65,16 +64,10 @@ public class Simulator implements EventScheduler{
 		Event e = evList.remove(0);
 		now = e.getTimeStamp();
 		
-		Long smallestLookahead = SimWorld.getInstance().getLookaheadQueue().getSmallestLookahead();
-		
-		if (e.getTimeStamp() > clock.currentSimulationTime()) {
-			do {
-				clock.sleepUntil(smallestLookahead);
-			} while (now > smallestLookahead);
-			
+		if (now > this.clock.getCurrentSimulationTime()) {		
 			clock.sleepUntil(e.getTimeStamp());
 		}
-			
+		
 		gui.println(e.toString()); // log the event
 		e.getEventHandler().processEvent(e,this);
 		//log the state of the object which is the target of this 
@@ -82,22 +75,58 @@ public class Simulator implements EventScheduler{
 	}
 
 	/**
-	 *  This is the main simulation loop
+	 * This is the main simulation loop
+	 *  
+	 * The simulation carries on even if there are no
+	 * events around anymore, since it might be possible
+	 * that some time an event might be sent to this 
+	 * LP. Until then the simulation is just synchronised
+	 * with the other LPs.
 	 */
 	public void runSimulation(){
 		this.rtStartTime = System.currentTimeMillis();
-		int evCnt = 0;
 		
 		SimWorld.getInstance().setSendThread(new SendThread(this));
 		SimWorld.getInstance().setRecvThread(new RecvThread());
 		SimWorld.getInstance().getRecvThread().start();
 		SimWorld.getInstance().getSendThread().start();
 		
-		while (evList.size() > 0){
-			processNextEvent();
-			evCnt++;
+		LookaheadQueue lq = SimWorld.getInstance().getLookaheadQueue();
+		long safeLookahead = 0l;
+		
+		while(lq.hasEmptyQueues()){
+			// wait with the simulation until the queues are filled
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}		
 		}
-		System.out.println("Processed "+ evCnt +" events.");
+		
+		safeLookahead = lq.getSmallestLookahead();
+		AirportLogger.getLogger().debug("Initial safe lookahead " + safeLookahead);
+		
+		while(true){
+			while(evList.size() > 0 && evList.get(0).getTimeStamp() <= safeLookahead){
+				AirportLogger.getLogger().debug("Process events until " + safeLookahead);
+				processNextEvent();
+				AirportLogger.getLogger().debug("CST " + this.clock.getCurrentSimulationTime());
+			}
+			
+			this.clock.sleepUntil(safeLookahead);
+			lq.removeLookeahead(safeLookahead);
+			AirportLogger.getLogger().debug("CST " + this.clock.getCurrentSimulationTime());
+			
+			while (lq.hasEmptyQueues()){
+				AirportLogger.getLogger().debug("Queue still empty");
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
+			}
+			
+			safeLookahead = lq.getSmallestLookahead();
+			AirportLogger.getLogger().debug("Setting new safe lookahead to " + safeLookahead);
+		}
 	}
 	
 	public void init() {
@@ -154,6 +183,10 @@ public class Simulator implements EventScheduler{
 		}
 	}
 	
+	public WorldClock getClock() {
+		return clock;
+	}
+
 	static public void main(String [] argv){
 		MPI.Init(argv);
 		SimWorld.getInstance().setArgs(argv);

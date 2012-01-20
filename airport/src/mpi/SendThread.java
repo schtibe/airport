@@ -1,6 +1,7 @@
 package mpi;
 
 import p2pmpi.mpi.MPI;
+import utils.AirportLogger;
 import air.SimWorld;
 import air.Simulator;
 
@@ -24,10 +25,10 @@ public class SendThread extends Thread {
 			if (data != null) {
 				this.sendMessage(data);
 			} else {
-				long rt = System.currentTimeMillis();
-				long elapsedTime = (rt - this.simulator.getRtStartTime());
-				if (elapsedTime >= this.lookAhead) {
-					this.sendNullMessage(elapsedTime, this.defaultLookAhead, -1);
+				long time = simulator.getClock().getCurrentSimulationTime();
+				if (time >= this.lookAhead) {
+					// time to send another null message
+					this.sendNullMessage(time, this.defaultLookAhead, -1);
 				}
 			}
 			
@@ -40,6 +41,10 @@ public class SendThread extends Thread {
 		}
 	}
 	
+	/**
+	 * Send a event message to a certain other process 
+	 * @param data
+	 */
 	private void sendMessage(MpiMessage data) {
 		int dest = SimWorld.getInstance().getRankFromString(data.getToAirport());
 		
@@ -60,6 +65,7 @@ public class SendThread extends Thread {
 		int LPcount = MPI.COMM_WORLD.SizeTotal();
 		int selfRank = MPI.COMM_WORLD.Rank();
 		
+		AirportLogger.getLogger().debug("Sending null message with TS " + timeStamp + " and lookahead " + lookAhead);
 		for (int lp = 0; lp < LPcount; lp++) {
 			if (lp != excludeRank && lp != selfRank) {
 				MpiMessage[] dataBuf = new MpiMessage[1];
