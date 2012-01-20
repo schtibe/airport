@@ -29,4 +29,4 @@ do
 done
 
 runCmd=`java -cp ./:$P2PMPI_HOME/p2pmpi.jar:$P2PMPI_HOME/log4j.jar:$pathJarFiles p2pmpi.tools.MPIArgs $*`
-java -Djava.library.path=/home/mb/git/bfh/airport/airport/lib -cp ./:$P2PMPI_HOME/p2pmpi.jar:$P2PMPI_HOME/log4j.jar:$CLASSPATH$pathJarFiles -Xmx512m -DP2PMPI_HOME=$P2PMPI_HOME -DP2PMPI_CONF_FILE=$P2PMPI_CONF_FILE -Dmode=server -Ddevice=niodevice $runCmd
+java -Djava.library.path=./lib -cp ./:$P2PMPI_HOME/p2pmpi.jar:$P2PMPI_HOME/log4j.jar:$CLASSPATH$pathJarFiles -Xmx512m -DP2PMPI_HOME=$P2PMPI_HOME -DP2PMPI_CONF_FILE=$P2PMPI_CONF_FILE -Dmode=server -Ddevice=niodevice $runCmd
