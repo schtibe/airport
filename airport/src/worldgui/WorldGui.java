@@ -8,7 +8,6 @@ import org.newdawn.slick.SlickException;
 import air.SimWorld;
 
 public class WorldGui extends BasicGame implements Runnable {
-
 	
 	public WorldGui(String airportName){
 		super(airportName);
@@ -19,6 +18,11 @@ public class WorldGui extends BasicGame implements Runnable {
 		AppGameContainer app;
 		try {
 			app = new AppGameContainer(this);
+			app.setAlwaysRender(true);
+			app.setTargetFrameRate(10);
+			app.setUpdateOnlyWhenVisible(false);
+			app.setMaximumLogicUpdateInterval(200);
+			app.setShowFPS(false);
 			app.start();
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
@@ -50,7 +54,14 @@ public class WorldGui extends BasicGame implements Runnable {
 
 
 	@Override
-	public void render(GameContainer arg0, Graphics arg1) throws SlickException {
+	public void render(GameContainer container, Graphics g) throws SlickException {
+		// TODO Auto-generated method stub
+		g.drawString("CST: " + SimWorld.getInstance().getSimulator().getCurrentSimulationTime(), 10, 10);
+		
+	}
+
+	@Override
+	public void init(GameContainer container) throws SlickException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -58,16 +69,11 @@ public class WorldGui extends BasicGame implements Runnable {
 
 
 	@Override
-	public void init(GameContainer arg0) throws SlickException {
+	public void update(GameContainer container, int delta) throws SlickException {
 		// TODO Auto-generated method stub
 		
-	}
-
-
-
-	@Override
-	public void update(GameContainer arg0, int arg1) throws SlickException {
-		// TODO Auto-generated method stub
+		
+		
 		
 	}
 }

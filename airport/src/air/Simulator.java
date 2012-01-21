@@ -18,17 +18,14 @@ import worldgui.WorldGui;
 public class Simulator implements EventScheduler{
 
 	private SimWorld world;
-	private long now; // simulation time
-
-	private Gui gui;
+	private WorldGui wg; 
 	
 	private Vector<Event> evList; // time ordered list
-	private long rtStartTime;
 	
 	private WorldClock clock = new WorldClock();
 	
 	public long getRtStartTime() {
-		return rtStartTime;
+		return clock.getRtStartTime();
 	}
 	
 	public Simulator (SimWorld world){
@@ -38,16 +35,16 @@ public class Simulator implements EventScheduler{
 	}
 
 	@Override
-	public long getCurrentSimulationTime() {
-		return now;
+	public synchronized long getCurrentSimulationTime() {
+		return clock.getCurrentSimulationTime();
 	}
-
+	
 	/* New events which lay in the past cause a causality error 
 	 * @see EventScheduler#scheduleEvent(Event)
 	 */
 	public void scheduleEvent(Event e){
 		long tim = e.getTimeStamp();
-		if (tim < now) throw new RuntimeException("Causality error: "+this);
+		if (tim < clock.getCurrentSimulationTime()) throw new RuntimeException("Causality error: "+this);
 		int pos=0;
 		while (pos < evList.size()){
 			Event n = evList.get(pos); 
@@ -63,16 +60,19 @@ public class Simulator implements EventScheduler{
 	 */
 	public void processNextEvent(){
 		Event e = evList.remove(0);
-		now = e.getTimeStamp();
 		
-		if (now > this.clock.getCurrentSimulationTime()) {		
+		if (e.getTimeStamp() > this.clock.getCurrentSimulationTime()) {		
 			clock.sleepUntil(e.getTimeStamp());
 		}
 		
-		gui.println(e.toString()); // log the event
+		// log the event
+		AirportLogger.getLogger().info("Process event: " + e.toString());
+		//	log the state of the object which is the target of this 
+		AirportLogger.getLogger().info("Event info: " + e.getEventHandler().toString());
+		
+		// process 
 		e.getEventHandler().processEvent(e,this);
-		//log the state of the object which is the target of this 
-		gui.println(e.getEventHandler().toString());   
+
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Simulator implements EventScheduler{
 	 * with the other LPs.
 	 */
 	public void runSimulation(){
-		this.rtStartTime = System.currentTimeMillis();
+		this.clock.setRtStartTime(System.currentTimeMillis());
 		
 		SimWorld.getInstance().setSendThread(new SendThread(this));
 		SimWorld.getInstance().setRecvThread(new RecvThread());
@@ -134,6 +134,10 @@ public class Simulator implements EventScheduler{
 		SimWorld.getInstance().setSimulator(this);
 		this.initWorld();
 		SimWorld.getInstance().setLookaheadQueue(new LookaheadQueue());
+		
+		// start simulation frontend
+		wg = new WorldGui("LP: " + MPI.COMM_WORLD.Rank());
+		new Thread(wg).start();
 	}
 	
 	public void initWorld(){
@@ -189,17 +193,19 @@ public class Simulator implements EventScheduler{
 	}
 
 	static public void main(String [] argv){
+		
+		// initialize MPI
 		MPI.Init(argv);
+		
+		// initialize simulation
 		SimWorld.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
 		sim.init();
-		sim.gui = new Gui();
-		sim.gui.init();
 		
-		WorldGui wg = new WorldGui("" + MPI.COMM_WORLD.Rank());
-		new Thread(wg).start();
+		// main simulation loop
+		sim.runSimulation(); 
 		
-		sim.runSimulation(); // main simulation loop
+		// exit MPI
 		MPI.Finalize();
 	}
 	
