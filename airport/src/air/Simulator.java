@@ -151,7 +151,7 @@ public class Simulator implements EventScheduler{
 		SimWorld.getInstance().setLookaheadQueue(new LookaheadQueue());
 		
 		// start simulation frontend
-		wg = new WorldGui("xxx");
+		wg = new WorldGui();
 		new Thread(wg).start();
 		try {
 			synchronized (wg) {
