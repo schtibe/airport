@@ -1,5 +1,6 @@
 package air;
 
+import p2pmpi.mpi.MPI;
 import mpi.MpiEvent;
 import mpi.MpiMessage;
 import utils.AirportLogger;
@@ -132,15 +133,17 @@ public class Aircraft implements EventHandler{
 			sched.scheduleEvent(e2);	
 			
 			// if the target airport is not the same rank as this LP, send a message
-			MpiMessage msg = new MpiMessage(
-					e.getTimeStamp(), 
-					MpiEvent.getDefaultLookAhead(), 
-					ac.getName(), 
-					ac.getCurrentAirPort().getName(), 
-					ac.getDestination().getName()
-			);
-			AirportLogger.getLogger().debug("Put the arrival event in the send queue");
-			SimWorld.getInstance().outgoingMessages.add(msg);
+			if (SimWorld.getInstance().getRankFromString(ac.getDestination().getName()) != MPI.COMM_WORLD.Rank()) {
+				MpiMessage msg = new MpiMessage(
+						e.getTimeStamp(), 
+						MpiEvent.getDefaultLookAhead(), 
+						ac.getName(), 
+						ac.getCurrentAirPort().getName(), 
+						ac.getDestination().getName()
+				);
+				AirportLogger.getLogger().debug("Put the arrival event in the send queue");
+				SimWorld.getInstance().outgoingMessages.add(msg);
+			}
 		}
 		else if (e.getType()==Event.START_LANDING){
 			ac.setState(Aircraft.LANDING);
