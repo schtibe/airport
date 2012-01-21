@@ -2,6 +2,7 @@ package air;
 
 public class WorldClock {
 	private long currentSimulationTime = 0;
+	private long rtStartTime = 0;
 
 	private static final int SCALE_FACTOR = 30000;
 
@@ -9,6 +10,14 @@ public class WorldClock {
 		synchronized(this) {
 			return this.currentSimulationTime;
 		}
+	}
+	
+	public long getRtStartTime(){
+		return this.rtStartTime;
+	}
+	
+	public void setRtStartTime(long rts){
+		this.rtStartTime = rts;
 	}
 
 	/**
