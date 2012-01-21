@@ -74,15 +74,18 @@ public class SimWorld {
 				+ "]";
 	}
 	
-	long timeScale = 100;
-
+//	long timeScale = 100;
+//
+	/**
+	 * @deprecated
+	 */
 	public long getTimeScale() {
-		return timeScale;
+		return getSimulator().getClock().getScaleFactor();
 	}
-
-	public void setTimeScale(long timeScale) {
-		this.timeScale = timeScale;
-	}
+//
+//	public void setTimeScale(long timeScale) {
+//		this.timeScale = timeScale;
+//	}
 	
 	String[] args;
 	public void setArgs(String[] args) {
