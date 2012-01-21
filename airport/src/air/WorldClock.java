@@ -19,6 +19,10 @@ public class WorldClock {
 	public void setRtStartTime(long rts){
 		this.rtStartTime = rts;
 	}
+	
+	public int getScaleFactor(){
+		return SCALE_FACTOR;
+	}
 
 	/**
 	 * Sleep until a certain time stamp is reached
