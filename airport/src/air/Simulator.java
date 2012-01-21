@@ -24,6 +24,8 @@ public class Simulator implements EventScheduler{
 	
 	private WorldClock clock = new WorldClock();
 	
+	private int mpiRank;
+	
 	public long getRtStartTime() {
 		return clock.getRtStartTime();
 	}
@@ -127,44 +129,81 @@ public class Simulator implements EventScheduler{
 			
 			safeLookahead = lq.getSmallestLookahead();
 			AirportLogger.getLogger().debug("Setting new safe lookahead to " + safeLookahead);
+			
+			// make one processor really slow, check synchronisation
+//			if(this.getMpiRank() == 1){
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+			
 		}
 	}
 	
-	public void init() {
+	public void init(int mpiRank) {
+		this.mpiRank = mpiRank;
+		
 		SimWorld.getInstance().setSimulator(this);
-		this.initWorld();
+		this.initWorld(mpiRank);
 		SimWorld.getInstance().setLookaheadQueue(new LookaheadQueue());
 		
 		// start simulation frontend
-		wg = new WorldGui("LP: " + MPI.COMM_WORLD.Rank());
+		wg = new WorldGui();
 		new Thread(wg).start();
 	}
 	
-	public void initWorld(){
+	public int getMpiRank(){
+		return mpiRank;
+	}
+	
+	private Airport homeAirport; 
+	
+	public Airport getHomeAirport(){
+		return homeAirport;
+	}
+	
+	public void initWorld(int mpiRank){
 		int n = 30; 
 		// Random Generator:
 		Random rand = new Random(1234);
+
 		// create airports
-		String [] airportNames = {"ZÜRICH","GENF","BASEL"};
-		Airport ap = new Airport("ZÜRICH", 0, 684000, 256000, 683000, 259000); 
+		String [] airportNames = {"ZUERICH","GENF","BASEL"};
+		Airport ap = new Airport("ZUERICH", 0, 684000, 256000, 683000, 259000);
 		world.addAirport(ap);
+		
+		if(mpiRank == 0){
+			this.homeAirport = ap;
+		}
+		
 		ap = new Airport("GENF", 1, 497000, 120000, 499000, 122000); 
 		world.addAirport(ap);
+		
+		if(mpiRank == 1){
+			this.homeAirport = ap;
+		}
+		
 		ap = new Airport("BASEL", 2, 599000, 287000, 601000, 288000); 
 		world.addAirport(ap);
 		
-		int rank = MPI.COMM_WORLD.Rank();
+		if(mpiRank == 2){
+			this.homeAirport = ap;
+		}
+		
 		// create 30 aircrafts and choose an arbitrary airport for this airport
 		for (int i=0;i<n;i++){
 			// Random Airport:
-			ap = world.getAirport(airportNames[rank]);
-			Aircraft ac = new Aircraft("X" + (rank + 1) * 1000 +i, ap);
+			ap = world.getAirport(airportNames[mpiRank]);
+			Aircraft ac = new Aircraft("X" + (mpiRank + 1) * 1000 +i, ap);
 			world.addAircraft(ac);			
 		}
 		// create FlightPlans for all aircrafts
 		for (int i=0;i<n;i++){
 			// Random Airport:
-			Aircraft ac = world.getAircraft("X" + (rank + 1) * 1000+i);
+			Aircraft ac = world.getAircraft("X" + (mpiRank + 1) * 1000+i);
 			// first Flight:
 			ap = world.getAirport(airportNames[rand.nextInt(3)]);
 			while (ap == ac.getCurrentAirPort()){
@@ -179,7 +218,7 @@ public class Simulator implements EventScheduler{
 		// System.out.println(world);
 		// schedule initial events
 		for (int i=0;i<n;i++){
-			Aircraft ac = world.getAircraft("X" + (rank + 1) * 1000+i);
+			Aircraft ac = world.getAircraft("X" + (mpiRank + 1) * 1000+i);
 			Flight f = ac.getFlightPlan().removeNextFlight();
 			ac.setDestination(f.getDestination());
 			ap = ac.getCurrentAirPort();
@@ -200,7 +239,7 @@ public class Simulator implements EventScheduler{
 		// initialize simulation
 		SimWorld.getInstance().setArgs(argv);
 		Simulator sim = new Simulator(SimWorld.getInstance());
-		sim.init();
+		sim.init(MPI.COMM_WORLD.Rank());
 		
 		// main simulation loop
 		sim.runSimulation(); 
