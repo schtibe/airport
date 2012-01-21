@@ -27,7 +27,7 @@ public class AirportLogger {
 	}
 	
 	private AirportLogger() {
-		File logFile = createNewLogFile("airport-" + MPI.COMM_WORLD.Rank() + ".txt");
+		File logFile = createNewLogFile("airport-" + MPI.COMM_WORLD.Rank() + ".log");
 		//ConsoleAppender consolLog = new ConsoleAppender(new SimpleLayout());
 		FileAppender fileLog;
 		try {
