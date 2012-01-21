@@ -115,6 +115,8 @@ public class WorldGui extends BasicGame implements Runnable {
 
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
-		// TODO Auto-generated method stub		
+		synchronized (this) {
+			this.notify();	
+		}
 	}
 }

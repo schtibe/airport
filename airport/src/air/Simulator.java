@@ -151,8 +151,15 @@ public class Simulator implements EventScheduler{
 		SimWorld.getInstance().setLookaheadQueue(new LookaheadQueue());
 		
 		// start simulation frontend
-		wg = new WorldGui();
+		wg = new WorldGui("xxx");
 		new Thread(wg).start();
+		try {
+			synchronized (wg) {
+				wg.wait();	
+			}
+			// wait until the thread is ready
+		} catch (InterruptedException e) {
+		}
 	}
 	
 	public int getMpiRank(){
