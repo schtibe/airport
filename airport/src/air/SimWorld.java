@@ -48,6 +48,10 @@ public class SimWorld {
 		return aircrafts.get(name);
 	}
 	
+	public void removeAircraft(Aircraft ac) {
+		aircrafts.remove(ac.getName());
+	}
+	
 	public static SimWorld getInstance(){	
 		return instance;
 	}

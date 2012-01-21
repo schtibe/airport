@@ -3,6 +3,10 @@ package air;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import p2pmpi.mpi.MPI;
+
+import utils.AirportLogger;
+
 
 /**
  * @author ps
@@ -201,19 +205,26 @@ public class Airport implements EventHandler {
 			sched.scheduleEvent(eNew);
 		}
 		
-		if (e.getType()==Event.ARRIVAL){			
-			// we put the aircraft to the holdingQueue 
-			Aircraft ac = e.getAirCraft();
-			subscribeAircraft(ac);
-			ac.setState(Aircraft.ON_HOLDING_LOOP);
-			ac.setCurrentAirPort(this);
-			ac.setLastX(getX2());
-			ac.setLastY(getY2());
-			ac.setLastTime(e.getTimeStamp());		
-			// System.out.println(ac);
-			addToHoldingQueue(ac);
-			Event eNew = new Event(Event.PROCESS_QUEUES,this,e.getTimeStamp(),this,null);
-			sched.scheduleEvent(eNew);
+		if (e.getType()==Event.ARRIVAL){
+			// if this is not the destination airport
+			// we throw the aircraft away 
+			if (e.getAirCraft().getDestination().getRank() != MPI.COMM_WORLD.Rank()) {
+				AirportLogger.getLogger().debug("Throw the aircraft " + e.getAirCraft().getName() + "away");
+				this.aircrafts.remove(e.getAirCraft());
+			} else {
+				// we put the aircraft to the holdingQueue 
+				Aircraft ac = e.getAirCraft();
+				subscribeAircraft(ac);
+				ac.setState(Aircraft.ON_HOLDING_LOOP);
+				ac.setCurrentAirPort(this);
+				ac.setLastX(getX2());
+				ac.setLastY(getY2());
+				ac.setLastTime(e.getTimeStamp());		
+				// System.out.println(ac);
+				addToHoldingQueue(ac);
+				Event eNew = new Event(Event.PROCESS_QUEUES,this,e.getTimeStamp(),this,null);
+				sched.scheduleEvent(eNew);
+			}
 		}
 
 		if (e.getType()==Event.PROCESS_QUEUES){
