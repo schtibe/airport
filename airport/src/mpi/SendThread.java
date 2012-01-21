@@ -48,6 +48,7 @@ public class SendThread extends Thread {
 	private void sendMessage(MpiMessage data) {
 		int dest = SimWorld.getInstance().getRankFromString(data.getToAirport());
 		
+		AirportLogger.getLogger().debug("Sending aircraft " + data.getAircraft() + " to " + dest);
 		MpiMessage[] dataBuf = new MpiMessage[1];
 		dataBuf[0] = data;
 		MPI.COMM_WORLD.Send(dataBuf, 0, 1, MPI.OBJECT, dest, 1);

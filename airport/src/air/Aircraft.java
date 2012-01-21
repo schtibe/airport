@@ -1,5 +1,9 @@
 package air;
 
+import mpi.MpiEvent;
+import mpi.MpiMessage;
+import utils.AirportLogger;
+
 
 public class Aircraft implements EventHandler{
 	// states
@@ -121,10 +125,22 @@ public class Aircraft implements EventHandler{
 			ap.setRunWayFree(true);
 			ap.unscribeAircraft(ac);
 			long duration = (long) (ap.getDistanceTo(ac.destination)/ac.maxSpeed);
+	
 			Event e1 = new Event(Event.ARRIVAL,ac.getDestination(),e.getTimeStamp()+duration,ac.getDestination(),ac); // to do!
 			sched.scheduleEvent(e1);
 			Event e2 = new Event(Event.PROCESS_QUEUES,ap,e.getTimeStamp(),ap,null);
-			sched.scheduleEvent(e2);			
+			sched.scheduleEvent(e2);	
+			
+			// if the target airport is not the same rank as this LP, send a message
+			MpiMessage msg = new MpiMessage(
+					e.getTimeStamp(), 
+					MpiEvent.getDefaultLookAhead(), 
+					ac.getName(), 
+					ac.getCurrentAirPort().getName(), 
+					ac.getDestination().getName()
+			);
+			AirportLogger.getLogger().debug("Put the arrival event in the send queue");
+			SimWorld.getInstance().outgoingMessages.add(msg);
 		}
 		else if (e.getType()==Event.START_LANDING){
 			ac.setState(Aircraft.LANDING);

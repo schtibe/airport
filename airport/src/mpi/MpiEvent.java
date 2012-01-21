@@ -1,5 +1,6 @@
 package mpi;
 
+import utils.AirportLogger;
 import air.Aircraft;
 import air.Airport;
 import air.Event;
@@ -21,6 +22,8 @@ public class MpiEvent {
 			return;
 		}		
 		
+		
+		
 		String aircraftName = msg.getAircraft();
 		String fromAirportName = msg.getFromAirport();
 		String toAirportName = msg.getToAirport();
@@ -34,6 +37,8 @@ public class MpiEvent {
 		// find airports
 		Airport fromAp = world.getAirport(fromAirportName);
 		Airport toAp = world.getAirport(toAirportName);
+		
+		AirportLogger.getLogger().debug("Received an event, aircraft " + aircraftName + " from " + fromAirportName);
 		
 		// create new aircraft, set departing airport as from, but immediately 
 		// remove it again
