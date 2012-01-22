@@ -233,7 +233,7 @@
         \sffamily{\bfseries{ \Huge \@title}}
         \vspace{0.6cm}
         \small \\
-        Ein Beispiel Projekt in Parallel Computing mit P2P-MPI \\
+        Ein Beispiel-Projekt in Parallel Computing mit P2P-MPI \\
         \vspace{0.1cm}
         von \@author\\
         \vspace{0.2cm}

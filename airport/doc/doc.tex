@@ -36,15 +36,22 @@ werden. Bisher wurde sie verteilt auf drei Prozessoren getestet.
 
 \section{Messaging}
 
-Falls der Zielflughafen eines Flugzeugs nicht denselben Rank besitzt
-wie der Flughafen, der vom aktuellen LP verwaltet wird, wird am Ende des
-Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events eine Message
-an den Zielflughafen versendet, welche die wichtigsten Daten des Flugs
-enthält. Der kreiert dann bei sich selbst ein ARRIVAL-Event. Ab diesem
-Zeitpunkt ist das Flugzeug beim LP des Zielflughafens bekannt und wird,
-sobald das ARRIVAL-Event ausgelöst wird, normal abgehandelt. Zudem
-kann es nun, sobald es in den sichtbaren Bereich des Flughafens fliegt,
-gezeichnet werden vom GUI.\\
+Das Messaging wird von zwei Threads übernommen, die neben der Simulation
+laufen. Der eine behandelt das Senden und der andere das Empfangen
+von Messages. Dabei gibt es eine Queue für den Send-Thread 
+(Outgoing-Message-Queue), wo Nachrichten abgelegt werden können von der
+Simulation, die verschickt werden sollen.\\
+
+Der Ablauf des Messaging ist wie folgt: Falls der Zielflughafen eines
+Flugzeugs nicht denselben Rank besitzt wie der Flughafen, der vom
+aktuellen LP verwaltet wird, wird am Ende des Start-Vorgangs zusätzlich
+zum Scheduling des ARRIVAL-Events eine Message an den Zielflughafen
+versendet, welche die wichtigsten Daten des Flugs enthält. Der kreiert
+dann bei sich selbst ein ARRIVAL-Event. Ab diesem Zeitpunkt ist das
+Flugzeug beim LP des Zielflughafens bekannt und wird, sobald das
+ARRIVAL-Event ausgelöst wird, normal abgehandelt. Zudem kann es nun,
+sobald es in den sichtbaren Bereich des Flughafens fliegt, gezeichnet
+werden vom GUI.\\
 
 Beim Flughafen, von dem das Flugzeug gestartet wird, wird das Flugzeug
 beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es ja
