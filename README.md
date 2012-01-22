@@ -3,7 +3,7 @@
 ## What is it ?
 
 This is a project at the Berne University of Applied Sciences
-in the module Parallel Computing. It's purpose is to explore the
+in the module Parallel Computing. Its purpose is to explore the
 concepts of a distributed simulation implemented with the 
 p2p-mpi framework. It simulates several airports and aicrafts that
 travel between these airports.
@@ -24,3 +24,5 @@ Then following steps have to be taken to execute the software.
 	$ ./run-mpi.sh
 
 ## License
+
+BSD 3-Clause. See LICENSE for further details
