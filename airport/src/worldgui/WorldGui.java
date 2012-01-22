@@ -102,16 +102,20 @@ public class WorldGui extends BasicGame implements Runnable {
 		// display some status variables
 		String safeTSStatus = "";
 		
-		if(SimWorld.getInstance().getLookaheadQueue().hasEmptyQueues()){
-			safeTSStatus = "<none>";
-		} else {
-			safeTSStatus = "" + SimWorld.getInstance().getLookaheadQueue().getSmallestLookahead();
-		}
-		
-		statusLine = "LP: " + SimWorld.getInstance().getSimulator().getMpiRank() +  
-				" CST: " + SimWorld.getInstance().getSimulator().getCurrentSimulationTime() + 
-				" Safe TS: " + safeTSStatus;
+		try {
+			if(SimWorld.getInstance().getLookaheadQueue().hasEmptyQueues()){
+				safeTSStatus = "<none>";
+			} else {
+				safeTSStatus = "" + SimWorld.getInstance().getLookaheadQueue().getSmallestLookahead();
+			}
+			
+			statusLine = "LP: " + SimWorld.getInstance().getSimulator().getMpiRank() +  
+					" CST: " + SimWorld.getInstance().getSimulator().getCurrentSimulationTime() + 
+					" Safe TS: " + safeTSStatus;
 				
+		} catch (Exception e) {
+			// we are very tolerant about errors here ;)
+		}
 	}
 	
 	@Override

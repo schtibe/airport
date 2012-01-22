@@ -200,13 +200,13 @@ public class Simulator implements EventScheduler{
 			this.homeAirport = ap;
 		}
 		
-		// create 30 aircrafts and choose an arbitrary airport for this airport
+		// create 30 aircrafts and choose home airport for its airport
 		for (int i=0;i<n;i++){
-			// Random Airport:
 			ap = world.getAirport(airportNames[mpiRank]);
 			Aircraft ac = new Aircraft("X" + (mpiRank + 1) * 1000 +i, ap);
-			world.addAircraft(ac);			
+			world.addAircraft(ac);
 		}
+		
 		// create FlightPlans for all aircrafts
 		for (int i=0;i<n;i++){
 			// Random Airport:
