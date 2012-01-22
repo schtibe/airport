@@ -17,6 +17,7 @@ address if you're just testing this software)
 
 Then following steps have to be taken to execute the software.
 
+	$ cd airport/
 	$ source env.sh # Set the environment
 	$ ant jar
 	$ runSuperNode
