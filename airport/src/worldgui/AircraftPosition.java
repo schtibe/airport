@@ -1,7 +1,9 @@
 package worldgui;
 
+import utils.AirportLogger;
 import utils.Vector;
 import air.Aircraft;
+import air.Event;
 import air.SimWorld;
 
 public class AircraftPosition  {
@@ -49,13 +51,38 @@ public class AircraftPosition  {
 		double xPos = this.aircraft.getCurrentAirPort().getX1();
 		double yPos = this.aircraft.getCurrentAirPort().getY1();
 		
-		long t0        = this.aircraft.getLastTime();
-		long t         = SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
+		long startTime 			= this.aircraft.getLastTime();
+		long currentTime		= SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
+		long timeOnRunway 		= currentTime - startTime;
 		
-		double runwayLength = this.aircraft.getCurrentAirPort().getRunwayLength();
-		double maxSpeed     = this.aircraft.getMaxSpeed();
-		double breakAcc     = Math.pow(maxSpeed, 2) / (2 * runwayLength);
+		double runwayLength 	= this.aircraft.getCurrentAirPort().getRunwayLength();
+		double maxSpeed     	= this.aircraft.getMaxSpeed();
+		double startAcc     	= this.aircraft.getMaxAcceleration();
+		double accTime			= maxSpeed / startAcc;
+		double accDistance		= startAcc * accTime * accTime/2.0;
+		double constDistance	= runwayLength - accDistance;
+		double constTime		= constDistance / maxSpeed;
+		double takeoffTime		= accTime + constTime;
+		double distanceOnRunway	= 0;
 		
+		/*AirportLogger.getLogger().debug(
+				"TAKEOFF runwayLenght: " + runwayLength + 
+				", accDistance: " + accDistance + 
+				", constDistance: " + constDistance + 
+				", accelerationTime: " + accTime +
+				", constantTime: " + constTime +
+				", takeoffTime: " + takeoffTime 
+				);*/
+		
+		if(timeOnRunway <= accTime){
+			// aircraft is still accelerating
+			distanceOnRunway = Math.pow(timeOnRunway, 2) / 2 * startAcc;
+		} else {
+			// aircraft is on full speed
+			distanceOnRunway = accDistance + (timeOnRunway - accTime) * maxSpeed;			
+		}
+		
+		// calculate position
 		Vector runwayBegin = new Vector(
 				new double[] {
 						this.aircraft.getCurrentAirPort().getX1(),
@@ -72,14 +99,11 @@ public class AircraftPosition  {
 		
 		Vector runway = runwayEnd.sub(runwayBegin);
 		runway = runway.normalize();
-		Vector head = runway.multiply((t - t0) * maxSpeed);
-		Vector tail = runway.multiply(0.5 * Math.pow((t - t0), 2) * -breakAcc);
-		//System.out.println("V_max: " + maxSpeed + ", break_acc: " + breakAcc);
-		//System.out.println("head: " + head + ", tail: "+tail);
-		
+		Vector aircraftOnRunway = runway.multiply(distanceOnRunway);
+
 		return new Vector(new double[] {
-				xPos + head.getX() - tail.getX(),
-				yPos + head.getY() - tail.getY() 
+				xPos + aircraftOnRunway.getX(),
+				yPos + aircraftOnRunway.getY()
 		});
 			
 	}
