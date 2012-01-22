@@ -1,30 +1,24 @@
-%**********************************************************************************
-%
-% o   o   o   o          Berne University of Applied Sciences
-%             :          Engineering and Information Technology
-%             :......o   Computer Science Division
-%
-% OOPLSS - Object-Oriented Programming Language with Subtyping and Subclassing
-% Ruben Bär, Stefan Heinemann
-%******************************************************************************
+% scrrprt or scrartcl 
+% When scrartcl -> chaptermark auskommentieren
+
 \NeedsTeXFormat{LaTeX2e}\relax
-\ProvidesClass{ooplssReport}[2011/03/03 Template for OOPLSS Documentation]
+%\ProvidesClass{ooplssReport}[2011/03/03 Template for OOPLSS Documentation]
 
 %% Load the book class with the following parameters:
 %% a4 paper, 10pt, two side pages, titlepage
-\DeclareOption{a4paper}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
-\DeclareOption{11pt}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
-\DeclareOption{oneside}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
-\DeclareOption{twoside}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
-\DeclareOption{titlepage}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
-\DeclareOption{numbers}{\PassOptionsToClass{\CurrentOption}{scrreprt}}
+\DeclareOption{a4paper}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption{11pt}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption{oneside}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption{twoside}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption{titlepage}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
+\DeclareOption{numbers}{\PassOptionsToClass{\CurrentOption}{scrartcl}}
 \DeclareOption{todo}{\def \showtodo {showtodo}}
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrreprt}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrartcl}}
 \ExecuteOptions{a4paper,11pt,titlepage}
 \ProcessOptions\relax
 
-%% Load reprt class
-\LoadClass[numbers=noenddot]{scrreprt} % report better for pdf 
+%% Load artcl class
+\LoadClass[numbers=noenddot]{scrartcl} % report better for pdf 
 
 
 \usepackage[ngerman]{babel}
@@ -232,17 +226,16 @@
 \renewcommand{\maketitle} {
     \begin{titlepage}
     \begin{flushright}
-    \vspace*{4cm}
-    %\includegraphics[height=4\baselineskip]{imgs/logo}\\ \vspace{0.2cm}
+    \vspace*{1cm}
+    \includegraphics[height=2\baselineskip]{logo_ti}\\ \vspace{4cm}
         \sffamily{\bfseries{ \Large \@subtitle}}\\
         \vspace{0.2cm}
         \sffamily{\bfseries{ \Huge \@title}}
         \vspace{0.6cm}
         \small \\
-        Eine Seminararbeit an der Berner Fachhochschule Abteilung Technik und Informatik \\
+        Ein Beispiel Projekt in Parallel Computing mit P2P-MPI \\
         \vspace{0.1cm}
         von \@author\\
-        betreut von Professor Rolf Haenni\symbolfootnote[3]{\href{mailto:rolf.haenni@bfh.ch}{rolf.haenni@bfh.ch}}\\
         \vspace{0.2cm}
         \@date
         \vspace{0.5cm}
@@ -260,7 +253,7 @@
 \fancyhf{}
 
 % no numbers for sections and chapters in headers
-\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{#1}{}}
 
 \if@twoside
@@ -274,7 +267,7 @@
 			\rightmark
 	}
 	\fancyhead[EL] {
-			%\includegraphics[height=2\baselineskip]{imgs/logo}
+			\includegraphics[height=1\baselineskip]{logo_ti_small}
 	}
 	% odd pages header
 	\fancyhead[OC] {
@@ -282,16 +275,16 @@
 			\leftmark
 	}
 	\fancyhead[OR]{
-			%\includegraphics[height=2\baselineskip]{imgs/logo}
+			\includegraphics[height=1\baselineskip]{logo_ti_small}
 	}
 \else
-	\fancyfoot[C]{\thepage}
-	\fancyhead[C] {
-			%chapter name
-			\rightmark
-	}
+	%\fancyfoot[C]{\thepage}
+	%\fancyhead[C] {
+	%		%chapter name
+	%		\rightmark
+	%}
 	\fancyhead[R] {
-			%\includegraphics[height=2\baselineskip]{imgs/logo}
+			\includegraphics[height=1\baselineskip]{logo_ti_small}
 	}
 \fi
 

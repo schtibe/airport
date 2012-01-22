@@ -4,8 +4,8 @@
 %             :          Engineering and Information Technology
 %             :......o   Computer Science Division
 %
-% ooplss - Object-Oriented Programming Language with Subtyping and Subclassing
-% Ruben Bär and Stefan Heinemann
+% Airport Simulation 
+% Matthias Blaser and Stefan Heinemann
 %**********************************************************************************
 \documentclass[oneside,DIV12,BCOR0.5cm,bibliography=totoc]{template}
 \raggedbottom
@@ -17,13 +17,82 @@ input metauml;
 \end{empcmds}
 
 
-\title{Scala}
-\subtitle{I-Seminar 7311a}
+\title{Aiport Simulation}
+\subtitle{P2PMPI-Beispielprojekt}
 
 \author{Matthias Blaser\symbolfootnote[2]{\href{mailto:blasm5@bfh.ch}{blasm5@bfh.ch}} undStefan Heinemann\symbolfootnote[1]{\href{mailto:heins4@bfh.ch}{heins4@bfh.ch}} }
 
+\maketitle
 
-hello world
+
+\section{Einleitung}
+
+\section{Messaging}
+
+Falls der Zielflughafen eines Flugzeugs nicht denselben Rank besitzt
+wie der Flughafen, der vom aktuellen LP verwaltet wird, wird am
+Ende des Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events 
+eine Message an den Zielflughafen versendet, welche die wichtigsten
+Daten des Flugs enthält. Der kreiert dann bei sich selbst ein 
+ARRIVAL-Event. Ab diesem Zeitpunkt ist das Flugzeug beim LP des 
+Zielflughafens bekannt und wird, sobald das ARRIVAL-Event
+ausgelöst wird, normal abgehandelt. Zudem kann es nun, sobald es
+in den sichtbaren Bereich des Flughafens fliegt, gezeichnet werden
+vom GUI.\\
+
+Beim Flughafen, von dem das Flugzeug gestartet wird, wird das Flugzeug
+beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es
+ja jetzt nicht mehr von diesem LP behandelt wird.\\
+
+\section{Synchronisierung}
+
+Wir haben die Synchronisierung mit Null-Messages implementiert.
+
+\subsection{Null-Messages}
+
+Gibt es in der Outgoing-Message-Queue keine Messages, die verschickt
+werden sollen, verschickt der Send-Thread automatisch in Regelmässigen
+Abständen an alle anderen LPs eine Null-Message mit Timestamp und 
+Lookahead.\\
+
+Falls eine Message in der Queue ist, wird nebst dieser an die 
+verbleibenden LPs ebenfalls eine Null-Message verschickt mit dem
+selben Timestamp und Lookahead.
+
+\subsection{Lookahead-Queue}
+
+Beim Erhalt einer Message, egal ob Null-Message oder ''richtig``, 
+wird der Timestamp mit dem Lookahead addiert und in der 
+\emph{LookaheadQueue} abgelegt. Diese ist dazu da, dass die
+Simulation immer abfragen kann, bis zu welchem Zeitpunkt sie sicher
+Events verarbeiten darf.
+
+\section{GUI}
+
+\section{Logger}
+
+Um nachvollziehen zu können, was genau in der Simulation auf den
+verschiedenen LPs abläuft, haben wir eine Logger-Klasse implementiert,
+welche verschiedene Debug-Meldungen in Log-Dateien schreibt. Diese
+Log-Dateien werden im Verzeichnis \emph{/tmp} abgelegt und heissen
+\emph{airport-<rank>.log}.
+
+\section{MPI-Fix}
+
+Da für die Slick-Library gewisse Native Libraries gebraucht werden,
+werden diese ebenfalls beim Start der MPI-Umgebung mit geschickt. Damit
+die LPs bei der Ausführung diese Libraries finden, muss beim starten
+der Simulation der \emph{java.library.path} an die Java Virtual
+Machine mitgegeben werden. Da das Ganze aber über die MPI-Umgebung
+gestartet wird, ist dies nicht ohne weiteres möglich wie z.B. bei
+der Angabe der Jar-Files, welches einfach über die Umgebungs-Variable
+\emph{LD\_LIBRARY\_PATH} gemacht werden kann.\\
+
+Aus diesem Grund haben wir das Script \emph{lib/p2pmpi/bin/p2pclient}
+so angepasst, dass die Variable \emph{java.library.path} beim Aufruf
+der Java Virtual Machine gesetzt wird. Es ist also erforderlich, dass
+die Software mit der mitgelieferten P2P-MPI-Version gestartet wird.
+
 
 \end{empfile}
 \end{document}
