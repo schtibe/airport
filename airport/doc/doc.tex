@@ -27,28 +27,34 @@ input metauml;
 
 \section{Einleitung}
 
-Dieses Dokument beschreibt gewisse Aspekte und Überlegungen im Beispiel
-Projekt, welches im Zug des Fachs Parallel Computing an der Berner
-Fachhochschule entstanden ist.\\
+Dieses Dokument beschreibt gewisse Aspekte und Überlegungen im Beispielprojekt, 
+welches im Zug des Fachs Parallel Computing an der Berner Fachhochschule 
+entstanden ist.\\
 
 Der Gebrauch der Software kann in der Datei \emph{README.md} nachgelesen
-werden. Bisher wurde sie verteilt auf drei Prozessoren getestet.
+werden. Bisher wurde sie verteilt auf drei Prozessoren getestet - um
+sie mit mehr oder weniger Prozessoren zu starten muss im Sourcecode der
+Applikation die Definition der Flughäfen (Namen, Koordinaten auf der
+Map usw.) und dessen Zuordnung auf die Prozessoren angepasst werden.
+
 
 \section{Messaging}
 
 Falls der Zielflughafen eines Flugzeugs nicht denselben Rank besitzt
-wie der Flughafen, der vom aktuellen LP verwaltet wird, wird am Ende des
-Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events eine Message
-an den Zielflughafen versendet, welche die wichtigsten Daten des Flugs
-enthält. Der kreiert dann bei sich selbst ein ARRIVAL-Event. Ab diesem
-Zeitpunkt ist das Flugzeug beim LP des Zielflughafens bekannt und wird,
+wie der Flughafen, der vom aktuellen LP\footnote{Logischer Prozessor:
+der einzelne Prozess, der ein Teil der Simulation selbständig
+durchführt} verwaltet wird, wird am Ende des Start-Vorgangs zusätzlich
+zum Scheduling des ARRIVAL-Events eine Message an den LP des
+Zielflughafens versendet, welche die wichtigsten Daten des Fluges
+enthält. Dieser LP kreiert dann bei sich selbst ein ARRIVAL-Event. Ab
+diesem Zeitpunkt ist das Flugzeug lokal bekannt und wird,
 sobald das ARRIVAL-Event ausgelöst wird, normal abgehandelt. Zudem
 kann es nun, sobald es in den sichtbaren Bereich des Flughafens fliegt,
-gezeichnet werden vom GUI.\\
+vom GUI gezeichnet werden. \\
 
-Beim Flughafen, von dem das Flugzeug gestartet wird, wird das Flugzeug
-beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es ja
-jetzt nicht mehr von diesem LP behandelt wird.\\
+Beim Flughafen, von dem das Flugzeug gestartet wurde, wird das Flugzeug
+beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es
+nun nicht mehr von diesem LP behandelt wird.\\
 
 \section{Synchronisierung}
 
@@ -56,14 +62,14 @@ Wir haben die Synchronisierung mit Null-Messages implementiert.
 
 \subsection{Null-Messages}
 
-Gibt es in der Outgoing-Message-Queue keine Messages, die verschickt
-werden sollen, verschickt der Send-Thread automatisch in Regelmässigen
+Gibt es in der Outgoing-Message-Queue keine Messages die verschickt
+werden sollen, verschickt der Send-Thread automatisch in regelmässigen
 Abständen an alle anderen LPs eine Null-Message mit Timestamp und 
 Lookahead.\\
 
-Falls eine Message in der Queue ist, wird nebst dieser an die 
-verbleibenden LPs ebenfalls eine Null-Message verschickt mit dem
-selben Timestamp und Lookahead.
+Falls eine Message in der Queue ist, wird nebst dieser ebenfalls eine
+Null-Message mit demselben Timestamp und Lookahead wie das entsprechende
+``richtige'' Event an die verbleibenden LPs verschickt.
 
 \subsection{Lookahead-Queue}
 
@@ -73,20 +79,40 @@ abgelegt. Diese ist dazu da, dass die Simulation immer abfragen kann,
 bis zu welchem Zeitpunkt sie sicher Events verarbeiten darf.\\
 
 Diese ist so implementiert, dass sie für jeden der ''anderen`` LPs
-eine Queue bereit stellt, wo die jeweiligen Lookahead-Werte abgelegt
-werden. Sie stellt eine Routine bereit, um zu Prüfen, ob jede dieser
-Queues mindestens einen Lookahead enthält. Ist dies nicht der Fall,
+eine Queue bereitstellt, wo die jeweiligen Lookahead-Werte abgelegt
+werden. Sie stellt eine Routine bereit, um zu prüfen, ob jede dieser
+Queues mindestens einen Lookahead-Wert enthält. Ist dies nicht der Fall,
 muss die Simulation angehalten werden, weil die Ausführung von Events
 nicht mehr sicher ist.\\
 
-Sind die Queues gefüllt, kann der aktuell kleinste Lookahead-Wert
-abgefragt werden. Sind nun Events mit einem kleineren Timestamp als der
-kleine Lookahead vorhanden, können diese sicher abgearbeitet werden. Ist
-dies nicht der Fall, wird bis zum Lookahead gewartet. Ist ein Lookahead
-einmal erreicht, wird er aus den Queues entfernt (und zwar aus allen,
+Sind alle Queues mit mindestens einem Wert gefüllt, kann der aktuell
+kleinste Lookahead-Wert abgefragt werden (der kleinste Wert aller
+kleinsten Werte der Queues). Sind nun Events mit einem kleineren
+Timestamp als der kleinste Lookahead in der lokalen Event-Queue
+vorhanden, können diese sicher abgearbeitet werden, da sichergestellt
+ist, dass jeder andere LP seine lokale Zeit mindestens zu diesem
+Timestamp fortgeschritten hat. Ist dies nicht der Fall (keine lokalen
+Events vorhanden), wird bis zum Lookahead gewartet und die lokale
+Simulationszeit Schritt für Schritt erhöht. Ist ein Lookahead einmal
+erreicht (Simulationszeit entspricht dem sicheren Timestamp aus den
+Lookahead-Werten), wird er aus den Queues entfernt (und zwar aus allen,
 da möglicherweise mehrere LPs den selben Wert verschickt haben).
 
 \section{GUI}
+
+Für die Anzeige der Simulation, also das Zeichnen der Flugzeuge auf der
+Karte, wird das 2D-Gaming Framework
+Slick\footnote{http://slick.cokeandcode.com/} verwendet. Dieses stellt
+alle nötigen Klassen zur Erstellung und Rendering eines Spiels zur
+Verfügung und erlaubt eine einfache Ansteuerung des Spielfeldes (Karte).
+
+In der Simulation wird jeweils der Heimatflughafen auf dem Spielfeld
+zentriert und die Koordinaten der Objekte (Flughafen und Flugzeuge)
+werden beim Platzieren von den Koordinaten der gesamten Karte auf
+das Koordinatensystem des Spielfelds umgerechnet. Zudem wird ein 
+Status-Text mit der aktuellen Rank-Nummer, der aktuellen
+Simulationszeit (CST) und dem kleinsten aktuellen Lookahead-Wert (oder
+<none>, falls zur Zeit keiner vorhanden ist). 
 
 \section{Logger}
 
@@ -99,19 +125,21 @@ und heissen \emph{airport-<rank>.log}.
 \section{MPI-Fix}
 
 Da für die Slick-Library gewisse Native Libraries gebraucht werden,
-werden diese ebenfalls beim Start der MPI-Umgebung mit geschickt. Damit
-die LPs bei der Ausführung diese Libraries finden, muss beim starten
+werden diese ebenfalls beim Start der MPI-Umgebung mitgeschickt. Damit
+die LPs bei der Ausführung diese Libraries finden, muss beim Starten
 der Simulation der \emph{java.library.path} an die Java Virtual
 Machine mitgegeben werden. Da das Ganze aber über die MPI-Umgebung
 gestartet wird, ist dies nicht ohne weiteres möglich wie z.B. bei
 der Angabe der Jar-Files, welches einfach über die Umgebungs-Variable
 \emph{LD\_LIBRARY\_PATH} gemacht werden kann.\\
 
-Aus diesem Grund haben wir das Script \emph{lib/p2pmpi/bin/p2pclient}
-so angepasst, dass die Variable \emph{java.library.path} beim Aufruf
-der Java Virtual Machine gesetzt wird. Es ist also erforderlich, dass
-die Software mit der mitgelieferten P2P-MPI-Version gestartet wird.
-
+Aus diesem Grund haben wir die Scripts \emph{lib/p2pmpi/bin/p2pmpirun}
+und \emph{lib/p2pmpi/bin/p2pclient} so angepasst, dass die Variable
+\emph{java.library.path} beim Aufruf der Java Virtual Machine gesetzt
+wird. Es ist also erforderlich, dass die Software mit der mitgelieferten
+P2P-MPI-Version gestartet wird und, falls die Software auf mehrere
+Hosts verteilt wird, die benutzte P2P-MPI-Version ebenfalls gepatcht
+ist.
 
 \end{empfile}
 \end{document}
