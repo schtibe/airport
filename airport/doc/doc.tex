@@ -20,7 +20,7 @@ input metauml;
 \title{Aiport Simulation}
 \subtitle{P2PMPI-Beispielprojekt}
 
-\author{Matthias Blaser\symbolfootnote[2]{\href{mailto:blasm5@bfh.ch}{blasm5@bfh.ch}} undStefan Heinemann\symbolfootnote[1]{\href{mailto:heins4@bfh.ch}{heins4@bfh.ch}} }
+\author{Matthias Blaser\symbolfootnote[2]{\href{mailto:blasm5@bfh.ch}{blasm5@bfh.ch}} und Stefan Heinemann\symbolfootnote[1]{\href{mailto:heins4@bfh.ch}{heins4@bfh.ch}} }
 
 \maketitle
 
@@ -40,17 +40,23 @@ Map usw.) und dessen Zuordnung auf die Prozessoren angepasst werden.
 
 \section{Messaging}
 
-Falls der Zielflughafen eines Flugzeugs nicht denselben Rank besitzt
-wie der Flughafen, der vom aktuellen LP\footnote{Logischer Prozessor:
-der einzelne Prozess, der ein Teil der Simulation selbständig
-durchführt} verwaltet wird, wird am Ende des Start-Vorgangs zusätzlich
-zum Scheduling des ARRIVAL-Events eine Message an den LP des
-Zielflughafens versendet, welche die wichtigsten Daten des Fluges
-enthält. Dieser LP kreiert dann bei sich selbst ein ARRIVAL-Event. Ab
-diesem Zeitpunkt ist das Flugzeug lokal bekannt und wird,
-sobald das ARRIVAL-Event ausgelöst wird, normal abgehandelt. Zudem
-kann es nun, sobald es in den sichtbaren Bereich des Flughafens fliegt,
-vom GUI gezeichnet werden. \\
+Das Messaging wird von zwei Threads übernommen, die neben der Simulation
+laufen. Der eine behandelt das Senden und der andere das Empfangen
+von Messages. Dabei gibt es eine Queue für den Send-Thread 
+(Outgoing-Message-Queue), wo von der Simulation Nachrichten abgelegt
+werden können die verschickt werden sollen.\\
+
+Der Ablauf des Messaging ist wie folgt: Falls der Zielflughafen eines
+Flugzeugs nicht denselben Rank besitzt wie der Flughafen, der vom
+aktuellen LP\footnote{Logischer Prozessor: der einzelne Prozess, der ein
+Teil der Simulation selbständig durchführt} verwaltet wird, wird am Ende
+des Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events eine
+Message an den LP des Zielflughafen versendet, welche die wichtigsten
+Daten des Fluges enthält. Dieser LP kreiert dann bei sich selbst ein
+ARRIVAL-Event. Ab diesem Zeitpunkt ist das Flugzeug beim LP des
+Zielflughafens bekannt und wird, sobald das ARRIVAL-Event ausgelöst
+wird, normal abgehandelt. Zudem kann es nun, sobald es in den sichtbaren
+Bereich des Flughafens fliegt, vom GUI gezeichnet werden.\\
 
 Beim Flughafen, von dem das Flugzeug gestartet wurde, wird das Flugzeug
 beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es
