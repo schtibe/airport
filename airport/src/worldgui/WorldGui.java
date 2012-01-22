@@ -8,7 +8,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.geom.Ellipse;
 
 import utils.Vector;
@@ -30,9 +29,7 @@ public class WorldGui extends BasicGame implements Runnable {
 	
 	private String statusLine = "";
 	private String airportStatus = "";
-	
-	private UnicodeFont aircraftFont; 
-		
+			
 	public WorldGui(){
 		// set nice title
 		super("LP: " + SimWorld.getInstance().getSimulator().getMpiRank() +  ", AP: " + SimWorld.getInstance().getSimulator().getHomeAirport().getName());
@@ -170,9 +167,6 @@ public class WorldGui extends BasicGame implements Runnable {
 		}
 		
 		g.setColor(new Color(255, 255, 255));
-		g.resetFont();
-		
-	
 	}
 
 	@Override
