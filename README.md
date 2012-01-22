@@ -24,6 +24,10 @@ Then following steps have to be taken to execute the software.
 	$ mpiboot
 	$ ./run-mpi.sh
 
+## Further Info
+
+For further information see the doc directory.
+
 ## License
 
 BSD 3-Clause. See LICENSE for further details

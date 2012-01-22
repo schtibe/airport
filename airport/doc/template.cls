@@ -278,7 +278,7 @@
 			\includegraphics[height=1\baselineskip]{logo_ti_small}
 	}
 \else
-	%\fancyfoot[C]{\thepage}
+	\fancyfoot[C]{\thepage}
 	%\fancyhead[C] {
 	%		%chapter name
 	%		\rightmark

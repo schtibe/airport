@@ -27,22 +27,28 @@ input metauml;
 
 \section{Einleitung}
 
+Dieses Dokument beschreibt gewisse Aspekte und Überlegungen im Beispiel
+Projekt, welches im Zug des Fachs Parallel Computing an der Berner
+Fachhochschule entstanden ist.\\
+
+Der Gebrauch der Software kann in der Datei \emph{README.md} nachgelesen
+werden. Bisher wurde sie verteilt auf drei Prozessoren getestet.
+
 \section{Messaging}
 
 Falls der Zielflughafen eines Flugzeugs nicht denselben Rank besitzt
-wie der Flughafen, der vom aktuellen LP verwaltet wird, wird am
-Ende des Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events 
-eine Message an den Zielflughafen versendet, welche die wichtigsten
-Daten des Flugs enthält. Der kreiert dann bei sich selbst ein 
-ARRIVAL-Event. Ab diesem Zeitpunkt ist das Flugzeug beim LP des 
-Zielflughafens bekannt und wird, sobald das ARRIVAL-Event
-ausgelöst wird, normal abgehandelt. Zudem kann es nun, sobald es
-in den sichtbaren Bereich des Flughafens fliegt, gezeichnet werden
-vom GUI.\\
+wie der Flughafen, der vom aktuellen LP verwaltet wird, wird am Ende des
+Start-Vorgangs zusätzlich zum Scheduling des ARRIVAL-Events eine Message
+an den Zielflughafen versendet, welche die wichtigsten Daten des Flugs
+enthält. Der kreiert dann bei sich selbst ein ARRIVAL-Event. Ab diesem
+Zeitpunkt ist das Flugzeug beim LP des Zielflughafens bekannt und wird,
+sobald das ARRIVAL-Event ausgelöst wird, normal abgehandelt. Zudem
+kann es nun, sobald es in den sichtbaren Bereich des Flughafens fliegt,
+gezeichnet werden vom GUI.\\
 
 Beim Flughafen, von dem das Flugzeug gestartet wird, wird das Flugzeug
-beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es
-ja jetzt nicht mehr von diesem LP behandelt wird.\\
+beim Auslösen des ARRIVAL-Events aus der Simulation entfernt, da es ja
+jetzt nicht mehr von diesem LP behandelt wird.\\
 
 \section{Synchronisierung}
 
@@ -61,11 +67,24 @@ selben Timestamp und Lookahead.
 
 \subsection{Lookahead-Queue}
 
-Beim Erhalt einer Message, egal ob Null-Message oder ''richtig``, 
-wird der Timestamp mit dem Lookahead addiert und in der 
-\emph{LookaheadQueue} abgelegt. Diese ist dazu da, dass die
-Simulation immer abfragen kann, bis zu welchem Zeitpunkt sie sicher
-Events verarbeiten darf.
+Beim Erhalt einer Message, egal ob Null-Message oder ''richtig``, wird
+der Timestamp mit dem Lookahead addiert und in der \emph{LookaheadQueue}
+abgelegt. Diese ist dazu da, dass die Simulation immer abfragen kann,
+bis zu welchem Zeitpunkt sie sicher Events verarbeiten darf.\\
+
+Diese ist so implementiert, dass sie für jeden der ''anderen`` LPs
+eine Queue bereit stellt, wo die jeweiligen Lookahead-Werte abgelegt
+werden. Sie stellt eine Routine bereit, um zu Prüfen, ob jede dieser
+Queues mindestens einen Lookahead enthält. Ist dies nicht der Fall,
+muss die Simulation angehalten werden, weil die Ausführung von Events
+nicht mehr sicher ist.\\
+
+Sind die Queues gefüllt, kann der aktuell kleinste Lookahead-Wert
+abgefragt werden. Sind nun Events mit einem kleineren Timestamp als der
+kleine Lookahead vorhanden, können diese sicher abgearbeitet werden. Ist
+dies nicht der Fall, wird bis zum Lookahead gewartet. Ist ein Lookahead
+einmal erreicht, wird er aus den Queues entfernt (und zwar aus allen,
+da möglicherweise mehrere LPs den selben Wert verschickt haben).
 
 \section{GUI}
 
@@ -73,9 +92,9 @@ Events verarbeiten darf.
 
 Um nachvollziehen zu können, was genau in der Simulation auf den
 verschiedenen LPs abläuft, haben wir eine Logger-Klasse implementiert,
-welche verschiedene Debug-Meldungen in Log-Dateien schreibt. Diese
-Log-Dateien werden im Verzeichnis \emph{/tmp} abgelegt und heissen
-\emph{airport-<rank>.log}.
+welche verschiedene Debug-Meldungen in separaten Log-Dateien
+schreibt. Diese Log-Dateien werden im Verzeichnis \emph{/tmp} abgelegt
+und heissen \emph{airport-<rank>.log}.
 
 \section{MPI-Fix}
 
