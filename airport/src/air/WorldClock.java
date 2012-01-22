@@ -4,7 +4,7 @@ public class WorldClock {
 	private long currentSimulationTime = 0;
 	private long rtStartTime = 0;
 
-	private static final int SCALE_FACTOR = 30000;
+	private static final int SCALE_FACTOR = 50;
 
 	public long getCurrentSimulationTime() {
 		synchronized(this) {
@@ -29,15 +29,16 @@ public class WorldClock {
 	 * @param targetTime
 	 */
 	public void sleepUntil(long targetTime) {
-		final long diff = targetTime - this.currentSimulationTime;
-		try {
-			final long sleepTime = diff * 1000 / SCALE_FACTOR;
-			Thread.sleep(sleepTime);
-			synchronized(this) {
-				this.currentSimulationTime = targetTime;
+		while(targetTime - this.currentSimulationTime > 0){
+			try {
+				final long sleepTime = 1000 / SCALE_FACTOR;
+				Thread.sleep(sleepTime);
+				synchronized(this) {
+					this.currentSimulationTime++;
+				}
+				
+			} catch (InterruptedException e) {
 			}
-			
-		} catch (InterruptedException e) {
 		}
 	}
 }
