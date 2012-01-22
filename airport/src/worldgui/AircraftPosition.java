@@ -1,17 +1,17 @@
 package worldgui;
 
 import utils.Vector;
+import air.Aircraft;
 import air.SimWorld;
 
-public class Aircraft  {
+public class AircraftPosition  {
 
 	private air.Aircraft aircraft;
 	
-	public Aircraft(air.Aircraft a) {
-		super();
+	public AircraftPosition() {	}
+
+	public void setAircraft(Aircraft a){
 		this.aircraft = a;
-		
-		//this.setRect(this.x, this.y, 10, 10);
 	}
 	
 	protected Vector getPosition() {
@@ -34,7 +34,7 @@ public class Aircraft  {
 				return this.getLandingPosition();
 		}
 		
-		return new Vector(new double[] {500000, 200000});
+		return this.getGroundPosition();
 	}
 	
 	private Vector getGroundPosition() {
@@ -45,51 +45,51 @@ public class Aircraft  {
 	}
 	
 	private Vector getTakeoffPosition() {
-		double startX   = this.aircraft.getCurrentAirPort().getX1();
-		double startY   = this.aircraft.getCurrentAirPort().getY1();
-		double endX     = this.aircraft.getCurrentAirPort().getX2();
-		double endY     = this.aircraft.getCurrentAirPort().getY2();
 		
-		long t0        = this.aircraft.getLastTime() * SimWorld.getInstance().getTimeScale();
-		long t         = System.currentTimeMillis() - 
-							SimWorld.getInstance().getSimulator().getRtStartTime();
+		double xPos = this.aircraft.getCurrentAirPort().getX1();
+		double yPos = this.aircraft.getCurrentAirPort().getY1();
 		
-		double speed     = this.getSpeed();
-		double acc       = this.getAcceleration();
-		double t_acc     = speed / acc;
+		long t0        = this.aircraft.getLastTime();
+		long t         = SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
 		
-		Vector n       = new Vector(new double[] {endX - startX, endY - startY});
-		n = n.normalize();
+		double runwayLength = this.aircraft.getCurrentAirPort().getRunwayLength();
+		double maxSpeed     = this.aircraft.getMaxSpeed();
+		double breakAcc     = Math.pow(maxSpeed, 2) / (2 * runwayLength);
 		
-		//System.out.println("t: " + t + " diff " + t0 + t_acc);
-		if (t < t0 + t_acc) {
-			Vector dir = n.multiply(0.5 * Math.pow(t - t0, 2) * acc);
-			//System.out.println("Dir: " + dir);
-			return new Vector(new double[] {
-					startX + dir.getX(),
-					startY + dir.getY()
-			});
-		} else {
+		Vector runwayBegin = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX1(),
+						this.aircraft.getCurrentAirPort().getY1()
+						}
+				);
+		
+		Vector runwayEnd = new Vector(
+				new double[] {
+						this.aircraft.getCurrentAirPort().getX2(),
+						this.aircraft.getCurrentAirPort().getY2()
+						}
+				);
+		
+		Vector runway = runwayEnd.sub(runwayBegin);
+		runway = runway.normalize();
+		Vector head = runway.multiply((t - t0) * maxSpeed);
+		Vector tail = runway.multiply(0.5 * Math.pow((t - t0), 2) * -breakAcc);
+		//System.out.println("V_max: " + maxSpeed + ", break_acc: " + breakAcc);
+		//System.out.println("head: " + head + ", tail: "+tail);
+		
+		return new Vector(new double[] {
+				xPos + head.getX() - tail.getX(),
+				yPos + head.getY() - tail.getY() 
+		});
 			
-		}
-		
-		// accelerate 
-		
-		// constant speed
-		
-		
-		
-		return this.getGroundPosition();		
 	}
 	
 	private double getAcceleration() {
-		double acc = this.aircraft.getMaxAcceleration();
-		return acc / SimWorld.getInstance().getTimeScale();
+		return this.aircraft.getMaxAcceleration();
 	}
 	
 	private double getSpeed() {
-		double speed = this.aircraft.getMaxSpeed();
-		return speed / SimWorld.getInstance().getTimeScale();
+		return this.aircraft.getMaxSpeed();
 	}
 
 	private Vector getFlightPosition() {
@@ -97,8 +97,7 @@ public class Aircraft  {
 		double lastY   = this.aircraft.getLastY();
 		
 		long t0        = this.aircraft.getLastTime();
-		long t         = System.currentTimeMillis() - 
-							SimWorld.getInstance().getSimulator().getRtStartTime();
+		long t         = SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
 		double speed   = this.getSpeed();
 		double targetX = this.aircraft.getDestination().getX2();
 		double targetY = this.aircraft.getDestination().getY2();
@@ -106,7 +105,7 @@ public class Aircraft  {
 		Vector n       = new Vector(new double[] {targetX - lastX, targetY - lastY});
 		n = n.normalize();
 	
-		Vector tail = n.multiply((t - t0 * SimWorld.getInstance().getTimeScale()) * (speed));
+		Vector tail = n.multiply((t - t0) * (speed));
 		return new Vector(new double[] {
 				lastX + tail.getComponent(0),
 				lastY + tail.getComponent(1)
@@ -120,11 +119,8 @@ public class Aircraft  {
 		double lastY   = this.aircraft.getLastY();
 		
 		long t0        = this.aircraft.getLastTime();
-		long t         = System.currentTimeMillis() - 
-							SimWorld.getInstance().getSimulator().getRtStartTime();
-		
-		long speed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
-		
+		long t         = SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
+				
 		Vector runwayBegin = new Vector(
 				new double[] {
 						this.aircraft.getCurrentAirPort().getX1(),
@@ -143,13 +139,11 @@ public class Aircraft  {
 		Vector runwayRotated = runway.rotate(Math.PI /  2);
 		
 		// angular velocity
-		double w = 0.008;
+		double w = 0.02;
 
-		Vector n = runwayBegin.add(runway.multiply(Math.cos((t - t0 * 
-				SimWorld.getInstance().getTimeScale()) * w)));
-		n = n.add(runwayRotated.multiply(Math.sin((t - t0 * 
-				SimWorld.getInstance().getTimeScale()) * w)));	
-		return n;		
+		Vector n = runwayBegin.add(runway.multiply(Math.cos((t - t0) * w)));
+		n = n.add(runwayRotated.multiply(Math.sin((t - t0) * w)));	
+		return n;
 	}
 	
 	private Vector getLandingPosition(){
@@ -157,11 +151,10 @@ public class Aircraft  {
 		double yPos = this.aircraft.getCurrentAirPort().getY2();
 		
 		long t0        = this.aircraft.getLastTime();
-		long t         = System.currentTimeMillis() - 
-							SimWorld.getInstance().getSimulator().getRtStartTime();
+		long t         = SimWorld.getInstance().getSimulator().getClock().getCurrentSimulationTime();
 		
 		double runwayLength = this.aircraft.getCurrentAirPort().getRunwayLength();
-		double maxSpeed     = this.aircraft.getMaxSpeed() / SimWorld.getInstance().getTimeScale();
+		double maxSpeed     = this.aircraft.getMaxSpeed();
 		double breakAcc     = Math.pow(maxSpeed, 2) / (2 * runwayLength);
 		
 		Vector runwayBegin = new Vector(
@@ -180,10 +173,10 @@ public class Aircraft  {
 		
 		Vector runway = runwayEnd.sub(runwayBegin);
 		runway = runway.normalize();
-		Vector head = runway.multiply((t - t0 * SimWorld.getInstance().getTimeScale()) * maxSpeed);
-		Vector tail = runway.multiply(0.5 * Math.pow((t - t0 * SimWorld.getInstance().getTimeScale()), 2) * breakAcc);
-		System.out.println("V_max: " + maxSpeed + ", break_acc: " + breakAcc);
-		System.out.println("head: " + head + ", tail: "+tail);
+		Vector head = runway.multiply((t - t0) * maxSpeed);
+		Vector tail = runway.multiply(0.5 * Math.pow((t - t0), 2) * breakAcc);
+		//System.out.println("V_max: " + maxSpeed + ", break_acc: " + breakAcc);
+		//System.out.println("head: " + head + ", tail: "+tail);
 		
 		return new Vector(new double[] {
 				xPos + head.getX() - tail.getX(),

@@ -1,8 +1,8 @@
 package air;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import mpi.MpiMessage;
 import mpi.RecvThread;
@@ -16,8 +16,8 @@ import mpi.SendThread;
  *
  */
 public class SimWorld {
-	private HashMap<String,Airport> airports = new HashMap<String,Airport>();
-	private HashMap<String,Aircraft> aircrafts = new HashMap<String,Aircraft>();
+	private ConcurrentHashMap<String,Airport> airports = new ConcurrentHashMap<String,Airport>();
+	private ConcurrentHashMap<String,Aircraft> aircrafts = new ConcurrentHashMap<String,Aircraft>();
 	static private SimWorld instance = new SimWorld(); 
 	
 	private Simulator simulator;
@@ -52,11 +52,11 @@ public class SimWorld {
 		return instance;
 	}
 	
-	public HashMap<String, Airport> getAirports() {
+	public ConcurrentHashMap<String, Airport> getAirports() {
 		return this.airports;
 	}
 	
-	public HashMap<String, Aircraft> getAircrafts() {
+	public synchronized ConcurrentHashMap<String, Aircraft> getAircrafts() {
 		return this.aircrafts;
 	}
 	
@@ -94,26 +94,6 @@ public class SimWorld {
 	
 	public String[] getArgs() {
 		return this.args;
-	}
-
-	public double getWorldScale() {
-		return 250;
-	}
-	
-	public double getXOffset() {
-		return 2000;
-	}
-	
-	public double getYOffset() {
-		return 450;
-	}
-	
-	public double getWorldHeight() {
-		return 800;
-	}
-	
-	public double getWorldWidth() {
-		return 1000;
 	}
 	
 	public int getRankFromString(String airport) {
